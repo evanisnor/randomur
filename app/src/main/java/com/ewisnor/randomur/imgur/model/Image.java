@@ -10,14 +10,14 @@ public class Image implements IDownloadableImage {
     private String id;
     private String title;
     private String description;
-    private Integer dateTime;
+    private Long dateTime;
     private String type;
     private Boolean animated;
     private Integer width;
     private Integer height;
     private Integer size;
     private Integer views;
-    private Integer bandwidth;
+    private Long bandwidth;
     private String section;
     private String link;
     private Boolean favorite;
@@ -37,7 +37,7 @@ public class Image implements IDownloadableImage {
         return description;
     }
 
-    public Integer getDateTime() {
+    public Long getDateTime() {
         return dateTime;
     }
 
@@ -65,7 +65,7 @@ public class Image implements IDownloadableImage {
         return views;
     }
 
-    public Integer getBandwidth() {
+    public Long getBandwidth() {
         return bandwidth;
     }
 

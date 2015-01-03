@@ -1,9 +1,12 @@
 package com.ewisnor.randomur.data;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
 
 import com.ewisnor.randomur.application.RandomurApp;
 
@@ -11,11 +14,9 @@ import com.ewisnor.randomur.application.RandomurApp;
  * Created by evan on 2015-01-03.
  */
 public class ThumbnailAdapter extends BaseAdapter {
-    private Context context;
     private RandomurApp appContext;
 
     public ThumbnailAdapter(Context context) {
-        this.context = context;
         this.appContext = (RandomurApp) context.getApplicationContext();
     }
 
@@ -36,6 +37,17 @@ public class ThumbnailAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        return null;
+        ImageView imageView;
+        if (convertView == null) {
+            imageView = new ImageView(appContext);
+            imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageView.setPadding(8, 8, 8, 8);
+        } else {
+            imageView = (ImageView) convertView;
+        }
+
+        imageView.setImageBitmap((Bitmap)getItem(position));
+        return imageView;
     }
 }

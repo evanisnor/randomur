@@ -7,7 +7,7 @@
     <GridView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gridView"
+        android:id="@+id/imageGrid"
         android:layout_gravity="center|bottom|left|right|top"
         android:layout_margin="5dp" />
 </FrameLayout>

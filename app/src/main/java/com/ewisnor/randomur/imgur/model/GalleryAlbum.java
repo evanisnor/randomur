@@ -7,7 +7,7 @@ public class GalleryAlbum {
     private String id;
     private String title;
     private String description;
-    private Integer dateTime;
+    private Long dateTime;
     private String cover;
     private Integer coverWidth;
     private Integer coverHeight;
@@ -40,7 +40,7 @@ public class GalleryAlbum {
         return description;
     }
 
-    public Integer getDateTime() {
+    public Long getDateTime() {
         return dateTime;
     }
 
