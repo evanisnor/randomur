@@ -1,0 +1,52 @@
+randomur
+----------------------------
+Display random images from imgur.com
+
+Structure
+=================
+
+com.ewisnor.randomur.iface
+    .IDownloadableImage
+        +IsThumbnailAvailable : Boolean
+        +GetThumbnailDownloadUrl() : String
+        +GetFullSizeDownloadUrl() : String
+
+com.ewisnor.randomur.http
+    .HttpHelper
+        -CreateHttpClient() : HttpClient
+        -Get(String url) : HttpResponse
+        +GetJson(String url) : String
+        +GetByteStream(String url) : byte[]
+
+    .Downloader
+        +DownloadFullImage(IDownloadableImage) : byte[]
+        +DownloadThumbnail(IDownloadableImage) : byte[]
+
+com.ewisnor.randomur.data
+    .ImageAdapter
+        (extends BaseAdapter)
+
+    .ImageStore
+        +SaveImage(String fileName, byte[] data) : String
+
+com.ewisnor.randomur.imgur
+    .model.Image
+        (inherits from IDownloadableImage)
+        (Properties as listed: https://api.imgur.com/models/image)
+
+    .model.GalleryAlbum
+        (Properties as listed: https://api.imgur.com/models/gallery_album)
+
+    .util.ImageUrlHelper
+        +CreateThumbnailUrl(String fullUrlH) : String
+
+    .ImgurApi
+        -CreateImgurRequest(String url) : HttpRequest
+        +GetRandomImageMeta(Integer page = 0) : GalleryAlbum
+
+com.ewisnor.randomur.task.GrabRandomImageAsyncTask
+    (extends AsyncTask<Void, Integer, Byte[]>)
+    ~doInBackground(Void... params) : Byte[]
+
+com.ewisnor.randomur.service.GrabRandomImageService
+    (extends IntentService)
