@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 
 import com.ewisnor.randomur.application.RandomurApp;
 import com.ewisnor.randomur.application.RandomurLogger;
+import com.ewisnor.randomur.data.ThumbnailAdapter;
 import com.ewisnor.randomur.imgur.ImgurApi;
 import com.ewisnor.randomur.imgur.model.BasicImages;
 import com.ewisnor.randomur.imgur.model.GalleryImage;
@@ -26,9 +27,11 @@ import java.io.InputStream;
 public class CacheThumbnailsTask extends AsyncTask<Integer, Integer, Boolean> {
 
     private RandomurApp appContext;
+    private ThumbnailAdapter adapter;
 
-    public CacheThumbnailsTask(Context context) {
+    public CacheThumbnailsTask(Context context, ThumbnailAdapter adapter) {
         this.appContext = (RandomurApp) context.getApplicationContext();
+        this.adapter = adapter;
     }
 
     @Override
@@ -40,13 +43,15 @@ public class CacheThumbnailsTask extends AsyncTask<Integer, Integer, Boolean> {
             pageNumber = params[0];
         }
 
+        RandomurLogger.info("Fetching random thumbnail page " + pageNumber);
+
         try {
             BasicImages randomImageMeta = ImgurApi.getRandomImageMeta(pageNumber);
             Integer count = randomImageMeta.getData().length;
             Integer futureTotal = appContext.getImageCache().countThumbnails() + count;
 
             for (GalleryImage thumbMeta : randomImageMeta.getData()) {
-                if (thumbMeta.getIsAlbum()) {
+                if (thumbMeta.isAlbum() || thumbMeta.isNsfw()) {
                     continue;
                 }
 
@@ -57,6 +62,11 @@ public class CacheThumbnailsTask extends AsyncTask<Integer, Integer, Boolean> {
 
                 if (status == HttpStatus.SC_OK || status == HttpStatus.SC_ACCEPTED) {
                     Bitmap thumbnail = BitmapFactory.decodeStream(thumbnailStream);
+                    if (thumbnail == null) {
+                        RandomurLogger.error("Failed to fetch image. (Status: " + status + ")");
+                        continue;
+                    }
+
                     appContext.getImageCache().saveThumbnail(thumbId++, thumbnail);
                     publishProgress(thumbId - futureTotal / count);
                 }
@@ -77,5 +87,6 @@ public class CacheThumbnailsTask extends AsyncTask<Integer, Integer, Boolean> {
     protected void onProgressUpdate(Integer... values) {
         super.onProgressUpdate(values);
         RandomurLogger.debug("Grabbed a thumbnail: " + values[0]);
+        adapter.notifyDataSetChanged();
     }
 }

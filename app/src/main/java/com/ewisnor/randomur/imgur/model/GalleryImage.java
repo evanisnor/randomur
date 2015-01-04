@@ -114,7 +114,7 @@ public class GalleryImage implements IDownloadableImage {
         return favorite;
     }
 
-    public Boolean getNsfw() {
+    public Boolean isNsfw() {
         return nsfw;
     }
 
@@ -146,7 +146,7 @@ public class GalleryImage implements IDownloadableImage {
         return score;
     }
 
-    public Boolean getIsAlbum() {
+    public Boolean isAlbum() {
         return isAlbum;
     }
 

@@ -44,8 +44,6 @@ dependencies {
         exclude module: 'hamcrest-core'
     }
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:21.0.3'
-    compile 'com.google.code.gson:gson:2.3'
     // From: https://github.com/robolectric/deckard-gradle
     repositories {
         mavenCentral()
@@ -76,6 +74,9 @@ dependencies {
         exclude module: 'wagon-http-lightweight'
         exclude module: 'wagon-provider-api'
     }
+    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.google.code.gson:gson:2.3'
+    compile 'com.android.support:support-v4:21.0.3'
 }
 
 
