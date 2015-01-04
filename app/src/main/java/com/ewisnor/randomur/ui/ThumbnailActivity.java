@@ -6,11 +6,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.ewisnor.randomur.R;
-import com.ewisnor.randomur.fragment.ImageGalleryFragment;
-import com.ewisnor.randomur.task.CacheThumbnailsTask;
+import com.ewisnor.randomur.application.RandomurLogger;
+import com.ewisnor.randomur.fragment.ThumbnailGridFragment;
+import com.ewisnor.randomur.iface.OnThumbnailClickListener;
 
 
-public class ThumbnailActivity extends ActionBarActivity {
+public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,7 +19,7 @@ public class ThumbnailActivity extends ActionBarActivity {
         setContentView(R.layout.activity_random_image);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, ImageGalleryFragment.newInstance())
+                    .add(R.id.container, ThumbnailGridFragment.newInstance())
                     .commit();
         }
     }
@@ -44,5 +45,10 @@ public class ThumbnailActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onThumbnailClick(int id) {
+        RandomurLogger.debug("Clicked on thumbnail " + id);
     }
 }

@@ -50,12 +50,12 @@ public class CacheThumbnailsTask extends AsyncTask<Integer, Integer, Boolean> {
             Integer count = randomImageMeta.getData().length;
             Integer futureTotal = appContext.getImageCache().countThumbnails() + count;
 
-            for (GalleryImage thumbMeta : randomImageMeta.getData()) {
-                if (thumbMeta.isAlbum() || thumbMeta.isNsfw()) {
+            for (GalleryImage imageMeta : randomImageMeta.getData()) {
+                if (imageMeta.isAlbum() || imageMeta.isNsfw()) {
                     continue;
                 }
 
-                String url = thumbMeta.getThumbnailDownloadUrl();
+                String url = imageMeta.getThumbnailDownloadUrl();
                 Pair<InputStream, Integer> result = HttpHelper.GetByteStream(url);
                 InputStream thumbnailStream = result.getFirst();
                 Integer status = result.getSecond();
@@ -67,8 +67,13 @@ public class CacheThumbnailsTask extends AsyncTask<Integer, Integer, Boolean> {
                         continue;
                     }
 
-                    appContext.getImageCache().saveThumbnail(thumbId++, thumbnail);
+                    appContext.getImageCache().saveThumbnail(thumbId, thumbnail);
+                    appContext.getImageCache().saveImageMeta(thumbId, imageMeta);
+                    thumbId++;
                     publishProgress(thumbId - futureTotal / count);
+                }
+                else if (status == HttpStatus.SC_NOT_FOUND) {
+                    RandomurLogger.info("Image " + imageMeta.getId() + " has been deleted from Imgur. Skipping.");
                 }
                 else {
                     RandomurLogger.error("Imgur did not respond favorably to the request. (Status: " + status + ")");
@@ -86,7 +91,6 @@ public class CacheThumbnailsTask extends AsyncTask<Integer, Integer, Boolean> {
     @Override
     protected void onProgressUpdate(Integer... values) {
         super.onProgressUpdate(values);
-        RandomurLogger.debug("Grabbed a thumbnail: " + values[0]);
         adapter.notifyDataSetChanged();
     }
 }

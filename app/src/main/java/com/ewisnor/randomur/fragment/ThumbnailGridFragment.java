@@ -11,24 +11,27 @@ import android.widget.AbsListView;
 import android.widget.GridView;
 
 import com.ewisnor.randomur.R;
+import com.ewisnor.randomur.application.RandomurLogger;
 import com.ewisnor.randomur.data.ThumbnailAdapter;
+import com.ewisnor.randomur.iface.OnThumbnailClickListener;
 import com.ewisnor.randomur.imgur.ImgurApi;
 import com.ewisnor.randomur.task.CacheThumbnailsTask;
 
-public class ImageGalleryFragment extends Fragment implements GridView.OnScrollListener, AdapterViewCompat.OnItemClickListener {
+public class ThumbnailGridFragment extends Fragment implements GridView.OnScrollListener {
 
     private ThumbnailAdapter adapter;
     private Integer page;
     private Boolean userScrolled;
+    private OnThumbnailClickListener thumbnailClickListener;
 
-    public static ImageGalleryFragment newInstance() {
-        ImageGalleryFragment fragment = new ImageGalleryFragment();
+    public static ThumbnailGridFragment newInstance() {
+        ThumbnailGridFragment fragment = new ThumbnailGridFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
     }
 
-    public ImageGalleryFragment() {
+    public ThumbnailGridFragment() {
         this.page = 0;
         this.userScrolled = false;
     }
@@ -44,7 +47,7 @@ public class ImageGalleryFragment extends Fragment implements GridView.OnScrollL
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_image_gallery, container, false);
-        adapter = new ThumbnailAdapter(getActivity().getApplicationContext());
+        adapter = new ThumbnailAdapter(getActivity().getApplicationContext(), thumbnailClickListener);
         GridView gridview = (GridView) view.findViewById(R.id.imageGrid);
         gridview.setOnScrollListener(this);
         gridview.setAdapter(adapter);
@@ -57,6 +60,12 @@ public class ImageGalleryFragment extends Fragment implements GridView.OnScrollL
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        try {
+            thumbnailClickListener = (OnThumbnailClickListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnThumbnailClickListener");
+        }
     }
 
     @Override
@@ -77,11 +86,6 @@ public class ImageGalleryFragment extends Fragment implements GridView.OnScrollL
         if (scrollState == GridView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
             userScrolled = true;
         }
-    }
-
-    @Override
-    public void onItemClick(AdapterViewCompat<?> adapterViewCompat, View view, int i, long l) {
-
     }
 
     /**
