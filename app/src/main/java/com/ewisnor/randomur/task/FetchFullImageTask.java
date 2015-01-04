@@ -22,12 +22,12 @@ import java.io.InputStream;
 /**
  * Created by evan on 2015-01-03.
  */
-public class CacheFullImageTask extends AsyncTask<Integer, Void, Bitmap> {
+public class FetchFullImageTask extends AsyncTask<Integer, Void, Bitmap> {
 
     private RandomurApp appContext;
     private OnImageDownloadedListener imageDownloadedListener;
 
-    public CacheFullImageTask(Context context, OnImageDownloadedListener imageDownloadedListener) {
+    public FetchFullImageTask(Context context, OnImageDownloadedListener imageDownloadedListener) {
         this.appContext = (RandomurApp) context.getApplicationContext();
         this.imageDownloadedListener = imageDownloadedListener;
     }
@@ -53,8 +53,6 @@ public class CacheFullImageTask extends AsyncTask<Integer, Void, Bitmap> {
                     RandomurLogger.error("Failed to fetch full size image. (Status: " + status + ")");
                     return null;
                 }
-
-                appContext.getImageCache().saveFullImage(imageId, image);
                 return image;
             }
             else if (status == HttpStatus.SC_NOT_FOUND) {

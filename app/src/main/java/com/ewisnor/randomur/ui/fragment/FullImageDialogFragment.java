@@ -14,7 +14,7 @@ import com.ewisnor.randomur.R;
 import com.ewisnor.randomur.application.RandomurApp;
 import com.ewisnor.randomur.application.RandomurLogger;
 import com.ewisnor.randomur.iface.OnImageDownloadedListener;
-import com.ewisnor.randomur.task.CacheFullImageTask;
+import com.ewisnor.randomur.task.FetchFullImageTask;
 
 /**
  * Created by evan on 2015-01-04.
@@ -36,16 +36,8 @@ public class FullImageDialogFragment extends DialogFragment implements OnImageDo
         view = layoutInflater.inflate(R.layout.dialogfragment_full_image, null);
         dialog.setContentView(view);
 
-//        ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
-
         RandomurApp appContext = (RandomurApp) getActivity().getApplication();
-        Bitmap imageBitmap = appContext.getImageCache().getFullImage(imageId);
-        if (imageBitmap != null) {
-            showImage(imageBitmap);
-        }
-        else {
-            new CacheFullImageTask(appContext, this).execute(imageId);
-        }
+        new FetchFullImageTask(appContext, this).execute(imageId);
 
         return dialog;
     }

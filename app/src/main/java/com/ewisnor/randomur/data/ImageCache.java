@@ -7,8 +7,8 @@ import com.ewisnor.randomur.application.RandomurLogger;
 import com.ewisnor.randomur.imgur.model.GalleryImage;
 
 /**
- * In-memory caching for thumbnails and full-size images.
- * Stores thumbnails, full bitmaps and metadata in separate LruCache instances.
+ * In-memory caching for thumbnails and image metadata.
+ * Stores thumbnails and metadata in separate LruCache instances.
  * ID values are universal, but not enforced.
  *
  * Reference: https://developer.android.com/training/displaying-bitmaps/cache-bitmap.html
@@ -21,19 +21,14 @@ public class ImageCache {
     /* Thumbnail cache uses a size limit of 1/16th of available memory */
     private final int thumbnailCacheSize = maxMemory / 16;
 
-    /* Full image cache uses a size limit of 1/8th of available memory */
-    private final int fullImageCacheSize = maxMemory / 8;
-
     /* Image meta cache uses a size limit of 1/16th of available memory */
     private final int imageMetaCacheSize = maxMemory / 16;
 
     private LruCache<Integer, Bitmap> thumbnailCache;
-    private LruCache<Integer, Bitmap> fullImageCache;
     private LruCache<Integer, GalleryImage> imageMetaCache;
 
     public ImageCache() {
         this.thumbnailCache = new LruCache<>(thumbnailCacheSize);
-        this.fullImageCache = new LruCache<>(fullImageCacheSize);
         this.imageMetaCache = new LruCache<>(imageMetaCacheSize);
     }
 
@@ -67,26 +62,6 @@ public class ImageCache {
     }
 
     /**
-     * Cache the provided full image in memory
-     * @param id The universal ID of the image
-     * @param image
-     */
-    public void saveFullImage(Integer id, Bitmap image) {
-        if (this.fullImageCache.get(id) == null && image != null) {
-            this.fullImageCache.put(id, image);
-        }
-    }
-
-    /**
-     * Get a full image by ID
-     * @param id The universal ID of the image
-     * @return
-     */
-    public Bitmap getFullImage(Integer id) {
-        return this.fullImageCache.get(id);
-    }
-
-    /**
      * Cache the metadata about an image separately from thumbnails and full images
      * @param id The universal ID of the image
      * @param meta Metadata to store
@@ -111,14 +86,6 @@ public class ImageCache {
      */
     public void cleanUp() {
         this.thumbnailCache.evictAll();
-        this.fullImageCache.evictAll();
         this.imageMetaCache.evictAll();
-    }
-
-    /**
-     * Clear only full size images from memory cache
-     */
-    public void cleanUpFullImages() {
-        this.fullImageCache.evictAll();
     }
 }
