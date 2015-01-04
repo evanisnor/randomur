@@ -19,10 +19,12 @@ import com.ewisnor.randomur.iface.OnThumbnailClickListener;
 public class ThumbnailAdapter extends BaseAdapter {
     private RandomurApp appContext;
     private OnThumbnailClickListener thumbnailClickListener;
+    private Integer imageWidth;
 
-    public ThumbnailAdapter(Context context, OnThumbnailClickListener thumbnailClickListener) {
+    public ThumbnailAdapter(Context context, OnThumbnailClickListener thumbnailClickListener, Integer imageWidth) {
         this.appContext = (RandomurApp) context.getApplicationContext();
         this.thumbnailClickListener = thumbnailClickListener;
+        this.imageWidth = imageWidth;
     }
 
     @Override
@@ -50,12 +52,12 @@ public class ThumbnailAdapter extends BaseAdapter {
         ImageView imageView;
         if (convertView == null) {
             imageView = new ImageView(appContext);
-            imageView.setLayoutParams(new GridView.LayoutParams(250,250));
+            imageView.setLayoutParams(new GridView.LayoutParams(imageWidth, imageWidth));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         } else {
             imageView = (ImageView) convertView;
         }
-//        imageView.setFocusable(false);
+
         imageView.setImageBitmap((Bitmap) getItem(position));
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override

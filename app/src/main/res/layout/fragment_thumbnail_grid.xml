@@ -1,7 +1,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ewisnor.randomur.fragment.ThumbnailGridFragment">
+    tools:context="com.ewisnor.randomur.fragment.ThumbnailGridFragment"
+    android:background="#ff000000">
 
 
     <GridView
@@ -9,11 +10,9 @@
         android:layout_height="match_parent"
         android:id="@+id/imageGrid"
         android:layout_gravity="center|bottom|left|right|top"
-        android:layout_margin="5dp"
         android:columnWidth="90dp"
         android:numColumns="auto_fit"
-        android:verticalSpacing="10dp"
-        android:horizontalSpacing="10dp"
         android:stretchMode="columnWidth"
-        android:gravity="center" />
+        android:gravity="center"/>
+
 </FrameLayout>
