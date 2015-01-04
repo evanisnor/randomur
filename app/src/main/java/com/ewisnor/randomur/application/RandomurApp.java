@@ -5,6 +5,9 @@ import android.app.Application;
 import com.ewisnor.randomur.data.ImageCache;
 
 /**
+ * Application context. Contains an instance of ImageCache that can be referenced
+ * by other components.
+ *
  * Created by evan on 2015-01-03.
  */
 public class RandomurApp extends Application {
@@ -21,7 +24,6 @@ public class RandomurApp extends Application {
     public void onLowMemory() {
         super.onLowMemory();
         this.imageCache.cleanUp();
-        //TODO Show low memory dialog
     }
 
     public ImageCache getImageCache() {

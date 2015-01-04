@@ -10,7 +10,7 @@ import org.apache.http.message.BasicHeader;
 import java.io.IOException;
 
 /**
- * Exposing Imgur API endpoints
+ * Exposes Imgur API endpoints.
  *
  * Created by evan on 2015-01-02.
  */

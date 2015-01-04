@@ -4,6 +4,7 @@ import com.ewisnor.randomur.iface.IDownloadableImage;
 import com.ewisnor.randomur.imgur.util.ImageUrlHelper;
 
 /**
+ * Imgur API model for Image metadata.
  * Based on this: https://api.imgur.com/models/gallery_image
  *
  * Created by evan on 2015-01-02.

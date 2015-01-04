@@ -17,14 +17,17 @@ import com.ewisnor.randomur.iface.OnImageDownloadedListener;
 import com.ewisnor.randomur.task.FetchFullImageTask;
 
 /**
+ * DialogFragment that displays a full size image as selected from the thumbnail grid.
+ * Will download the image using the FetchFullImageTask during onCreateDialog.
+ *
  * Created by evan on 2015-01-04.
  */
 public class FullImageDialogFragment extends DialogFragment implements OnImageDownloadedListener {
     public static final String IMAGE_ID_ARGUMENT = "imageIdArgument";
+    public static final String STATE_IMAGE = "stateImage";
 
     private View view;
-
-    public FullImageDialogFragment() {}
+    private Bitmap image;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -36,13 +39,39 @@ public class FullImageDialogFragment extends DialogFragment implements OnImageDo
         view = layoutInflater.inflate(R.layout.dialogfragment_full_image, null);
         dialog.setContentView(view);
 
-        RandomurApp appContext = (RandomurApp) getActivity().getApplication();
-        new FetchFullImageTask(appContext, this).execute(imageId);
+
+        if (savedInstanceState == null) {
+            RandomurApp appContext = (RandomurApp) getActivity().getApplication();
+            new FetchFullImageTask(appContext, this).execute(imageId);
+        }
+        else {
+            onRestoreInstanceState(savedInstanceState);
+        }
 
         return dialog;
     }
 
-    public void showImage(Bitmap image) {
+    /**
+     * To be called when savedInstanceState is not null -- Probably because the device screen orientation
+     * changed.
+     * @param savedInstanceState State bundle
+     */
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        image = savedInstanceState.getParcelable(STATE_IMAGE);
+        showImage();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(STATE_IMAGE, image);
+    }
+
+    /**
+     * Display the downloaded image by hiding the progress bar spinner, setting the bitmap
+     * to the imageview and then showing the imageview.
+     */
+    public void showImage() {
         ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
         ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
         progressBar.setVisibility(View.INVISIBLE);
@@ -56,7 +85,8 @@ public class FullImageDialogFragment extends DialogFragment implements OnImageDo
             RandomurLogger.error("Failed to show full size image");
         }
         else {
-            showImage(image);
+            this.image = image;
+            showImage();
         }
     }
 }

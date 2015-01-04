@@ -2,7 +2,6 @@ package com.ewisnor.randomur.imgur.model;
 
 /**
  * Based on this: https://api.imgur.com/models/gallery_album
- * Not really used except for in a test... because I think their API docs need clarification.
  *
  * Created by evan on 2015-01-02.
  */

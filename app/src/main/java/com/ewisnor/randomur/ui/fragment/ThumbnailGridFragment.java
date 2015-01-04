@@ -22,6 +22,13 @@ import com.ewisnor.randomur.iface.OnThumbnailClickListener;
 import com.ewisnor.randomur.imgur.ImgurApi;
 import com.ewisnor.randomur.task.CacheThumbnailsTask;
 
+/**
+ * View for displaying a grid of random thumbnails from Imgur. Binds the ThumbnailAdapter to the gridview.
+ * Listens for the user to scroll to the bottom and then grabs another page of thumbnails using the
+ * CacheThumbnailsTask.
+ *
+ * Created by evan on 2015-01-03.
+ */
 public class ThumbnailGridFragment extends Fragment implements GridView.OnScrollListener {
     /* Desired grid column width in DP */
     private static final Integer COLUMN_WIDTH_DP = 125;
@@ -30,13 +37,6 @@ public class ThumbnailGridFragment extends Fragment implements GridView.OnScroll
     private Integer page;
     private Boolean userScrolled;
     private OnThumbnailClickListener thumbnailClickListener;
-
-    public static ThumbnailGridFragment newInstance() {
-        ThumbnailGridFragment fragment = new ThumbnailGridFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     public ThumbnailGridFragment() {
         this.page = 0;
@@ -73,7 +73,7 @@ public class ThumbnailGridFragment extends Fragment implements GridView.OnScroll
      * across all device resolutions.
      * @return Calculated column width
      */
-    public Integer getColumnWidth() {
+    private Integer getColumnWidth() {
         Resources r = getResources();
         WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
@@ -105,7 +105,7 @@ public class ThumbnailGridFragment extends Fragment implements GridView.OnScroll
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        if (firstVisibleItem + visibleItemCount >= totalItemCount - visibleItemCount && userScrolled) {
+        if (firstVisibleItem + visibleItemCount >= totalItemCount && userScrolled) {
             fetchThumbnails();
             userScrolled = false;
         }

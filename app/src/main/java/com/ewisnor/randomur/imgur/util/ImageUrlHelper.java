@@ -1,6 +1,8 @@
 package com.ewisnor.randomur.imgur.util;
 
 /**
+ * Helper functions for the Imgur API
+ *
  * Created by evan on 2015-01-02.
  */
 public class ImageUrlHelper {

@@ -12,7 +12,13 @@ import com.ewisnor.randomur.iface.OnThumbnailClickListener;
 import com.ewisnor.randomur.ui.fragment.FullImageDialogFragment;
 import com.ewisnor.randomur.ui.fragment.ThumbnailGridFragment;
 
-
+/**
+ * Main activity for Randomur. Loads the ThumbnailGridFragment, which fetches random thumbnails from Imgur.
+ * This activity handles grid clicks so the FullImageDialogFragment can be shown to display full size
+ * images in full screen.
+ *
+ * Created by evan on 2015-01-02.
+ */
 public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailClickListener {
 
     @Override
@@ -22,7 +28,7 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, ThumbnailGridFragment.newInstance())
+                    .add(R.id.container, new ThumbnailGridFragment())
                     .commit();
         }
     }
@@ -55,8 +61,7 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
     }
 
     @Override
-    protected void onDestroy()
-    {
+    protected void onDestroy() {
         super.onDestroy();
         ((RandomurApp) getApplication()).getImageCache().cleanUp();
     }
