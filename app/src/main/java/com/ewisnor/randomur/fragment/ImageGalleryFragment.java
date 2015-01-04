@@ -12,6 +12,7 @@ import android.widget.GridView;
 
 import com.ewisnor.randomur.R;
 import com.ewisnor.randomur.data.ThumbnailAdapter;
+import com.ewisnor.randomur.imgur.ImgurApi;
 import com.ewisnor.randomur.task.CacheThumbnailsTask;
 
 public class ImageGalleryFragment extends Fragment implements GridView.OnScrollListener, AdapterViewCompat.OnItemClickListener {
@@ -88,7 +89,7 @@ public class ImageGalleryFragment extends Fragment implements GridView.OnScrollL
      * thumbnail is available.
      */
     private void fetchThumbnails() {
-        if (adapter != null) {
+        if (adapter != null && page <= ImgurApi.MAX_RANDOM_PAGES) {
             new CacheThumbnailsTask(getActivity().getApplicationContext(), adapter).execute(page++);
         }
     }
