@@ -55,14 +55,19 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onDestroy()
+    {
+        super.onDestroy();
         ((RandomurApp) getApplication()).getImageCache().cleanUp();
     }
 
     @Override
     public void onThumbnailClick(int id) {
         RandomurLogger.debug("Clicked on thumbnail " + id);
-        FullImageDialogFragment fullImageDialog = new FullImageDialogFragment(id);
+        FullImageDialogFragment fullImageDialog = new FullImageDialogFragment();
+        Bundle b = new Bundle();
+        b.putInt(FullImageDialogFragment.IMAGE_ID_ARGUMENT, id);
+        fullImageDialog.setArguments(b);
         fullImageDialog.show(getFragmentManager(), "");
     }
 }

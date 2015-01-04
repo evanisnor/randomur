@@ -1,14 +1,15 @@
 package com.ewisnor.randomur.task;
 
-import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.ewisnor.randomur.application.RandomurApp;
 import com.ewisnor.randomur.application.RandomurLogger;
+import com.ewisnor.randomur.iface.OnImageDownloadedListener;
 import com.ewisnor.randomur.imgur.model.GalleryImage;
 import com.ewisnor.randomur.util.HttpHelper;
 import com.ewisnor.randomur.util.Pair;
@@ -17,19 +18,18 @@ import org.apache.http.HttpStatus;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Random;
 
 /**
  * Created by evan on 2015-01-03.
  */
-public class LoadFullImageTask extends AsyncTask<Integer, Void, Bitmap> {
+public class CacheFullImageTask extends AsyncTask<Integer, Void, Bitmap> {
 
     private RandomurApp appContext;
-    private ImageView view;
+    private OnImageDownloadedListener imageDownloadedListener;
 
-    public LoadFullImageTask(Context context, ImageView view) {
+    public CacheFullImageTask(Context context, OnImageDownloadedListener imageDownloadedListener) {
         this.appContext = (RandomurApp) context.getApplicationContext();
-        this.view = view;
+        this.imageDownloadedListener = imageDownloadedListener;
     }
 
     @Override
@@ -73,8 +73,8 @@ public class LoadFullImageTask extends AsyncTask<Integer, Void, Bitmap> {
 
     @Override
     protected void onPostExecute(Bitmap bitmap) {
-        if (view != null && bitmap != null) {
-            view.setImageBitmap(bitmap);
+        if (imageDownloadedListener != null) {
+            imageDownloadedListener.OnImageDownloaded(bitmap);
         }
     }
 }

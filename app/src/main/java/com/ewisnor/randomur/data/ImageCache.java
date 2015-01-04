@@ -114,4 +114,11 @@ public class ImageCache {
         this.fullImageCache.evictAll();
         this.imageMetaCache.evictAll();
     }
+
+    /**
+     * Clear only full size images from memory cache
+     */
+    public void cleanUpFullImages() {
+        this.fullImageCache.evictAll();
+    }
 }
