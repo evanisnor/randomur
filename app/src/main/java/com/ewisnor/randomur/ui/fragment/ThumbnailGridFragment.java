@@ -1,4 +1,4 @@
-package com.ewisnor.randomur.fragment;
+package com.ewisnor.randomur.ui.fragment;
 
 import android.app.Activity;
 import android.content.Context;

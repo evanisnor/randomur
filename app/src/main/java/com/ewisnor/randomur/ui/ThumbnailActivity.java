@@ -6,8 +6,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.ewisnor.randomur.R;
+import com.ewisnor.randomur.application.RandomurApp;
 import com.ewisnor.randomur.application.RandomurLogger;
-import com.ewisnor.randomur.fragment.ThumbnailGridFragment;
+import com.ewisnor.randomur.ui.fragment.FullImageDialogFragment;
+import com.ewisnor.randomur.ui.fragment.ThumbnailGridFragment;
 import com.ewisnor.randomur.iface.OnThumbnailClickListener;
 
 
@@ -16,7 +18,7 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_random_image);
+        setContentView(R.layout.activity_thumbnail);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -28,7 +30,7 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_random_image, menu);
+        getMenuInflater().inflate(R.menu.menu_thumbnail, menu);
         return true;
     }
 
@@ -53,7 +55,14 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
     }
 
     @Override
+    protected void onDestroy() {
+        ((RandomurApp) getApplication()).getImageCache().cleanUp();
+    }
+
+    @Override
     public void onThumbnailClick(int id) {
         RandomurLogger.debug("Clicked on thumbnail " + id);
+        FullImageDialogFragment fullImageDialog = new FullImageDialogFragment(id);
+        fullImageDialog.show(getFragmentManager(), "");
     }
 }

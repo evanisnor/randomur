@@ -63,7 +63,7 @@ public class CacheThumbnailsTask extends AsyncTask<Integer, Integer, Boolean> {
                 if (status == HttpStatus.SC_OK || status == HttpStatus.SC_ACCEPTED) {
                     Bitmap thumbnail = BitmapFactory.decodeStream(thumbnailStream);
                     if (thumbnail == null) {
-                        RandomurLogger.error("Failed to fetch image. (Status: " + status + ")");
+                        RandomurLogger.error("Failed to fetch thumbnail. (Status: " + status + ")");
                         continue;
                     }
 
