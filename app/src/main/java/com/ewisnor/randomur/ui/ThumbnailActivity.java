@@ -8,9 +8,9 @@ import android.view.MenuItem;
 import com.ewisnor.randomur.R;
 import com.ewisnor.randomur.application.RandomurApp;
 import com.ewisnor.randomur.application.RandomurLogger;
+import com.ewisnor.randomur.iface.OnThumbnailClickListener;
 import com.ewisnor.randomur.ui.fragment.FullImageDialogFragment;
 import com.ewisnor.randomur.ui.fragment.ThumbnailGridFragment;
-import com.ewisnor.randomur.iface.OnThumbnailClickListener;
 
 
 public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailClickListener {
