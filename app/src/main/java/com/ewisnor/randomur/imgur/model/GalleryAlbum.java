@@ -1,6 +1,9 @@
 package com.ewisnor.randomur.imgur.model;
 
 /**
+ * Based on this: https://api.imgur.com/models/gallery_album
+ * Not really used except for in a test... because I think their API docs need clarification.
+ *
  * Created by evan on 2015-01-02.
  */
 public class GalleryAlbum {
@@ -26,7 +29,7 @@ public class GalleryAlbum {
     private Boolean nsfw;
     private Integer commentCount;
     private Integer imagesCount;
-    private Image[] images;
+    private GalleryImage[] images;
 
     public String getId() {
         return id;
@@ -116,7 +119,7 @@ public class GalleryAlbum {
         return imagesCount;
     }
 
-    public Image[] getImages() {
+    public GalleryImage[] getImages() {
         return images;
     }
 }

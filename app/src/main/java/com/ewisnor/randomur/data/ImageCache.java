@@ -3,6 +3,8 @@ package com.ewisnor.randomur.data;
 import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
 
+import com.ewisnor.randomur.application.RandomurLogger;
+
 /**
  * In-memory caching for thumbnails and full-size images.
  * Advice taken from: https://developer.android.com/training/displaying-bitmaps/cache-bitmap.html
@@ -34,6 +36,7 @@ public class ImageCache {
     public void saveThumbnail(Integer id, Bitmap image) {
         if (this.thumbnailCache.get(id) == null) {
             this.thumbnailCache.put(id, image);
+            RandomurLogger.debug("Cached thumbnail " + id);
         }
     }
 

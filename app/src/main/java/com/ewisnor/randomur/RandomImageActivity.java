@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.ewisnor.randomur.fragment.ImageGalleryFragment;
+import com.ewisnor.randomur.task.CacheThumbnailsTask;
 
 
 public class RandomImageActivity extends ActionBarActivity {
@@ -18,6 +19,8 @@ public class RandomImageActivity extends ActionBarActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, ImageGalleryFragment.newInstance())
                     .commit();
+
+            new CacheThumbnailsTask(getApplicationContext()).execute(0);
         }
     }
 

@@ -4,9 +4,11 @@ import com.ewisnor.randomur.iface.IDownloadableImage;
 import com.ewisnor.randomur.imgur.util.ImageUrlHelper;
 
 /**
+ * Based on this: https://api.imgur.com/models/gallery_image
+ *
  * Created by evan on 2015-01-02.
  */
-public class Image implements IDownloadableImage {
+public class GalleryImage implements IDownloadableImage {
     private String id;
     private String title;
     private String description;
@@ -18,12 +20,23 @@ public class Image implements IDownloadableImage {
     private Integer size;
     private Integer views;
     private Long bandwidth;
-    private String section;
+    private String deleteHash;
     private String link;
+    private String gifv;
+    private String mp4;
+    private String webm;
+    private Boolean looping;
+    private Integer vote;
     private Boolean favorite;
     private Boolean nsfw;
-    private Integer vote;
+    private Integer commentCount;
+    private String section;
     private String accountUrl;
+    private String accountId;
+    private Integer ups;
+    private Integer downs;
+    private Integer score;
+    private Boolean isAlbum;
 
     public String getId() {
         return id;
@@ -69,12 +82,32 @@ public class Image implements IDownloadableImage {
         return bandwidth;
     }
 
-    public String getSection() {
-        return section;
+    public String getDeleteHash() {
+        return deleteHash;
     }
 
     public String getLink() {
         return link;
+    }
+
+    public String getGifv() {
+        return gifv;
+    }
+
+    public String getMp4() {
+        return mp4;
+    }
+
+    public String getWebm() {
+        return webm;
+    }
+
+    public Boolean getLooping() {
+        return looping;
+    }
+
+    public Integer getVote() {
+        return vote;
     }
 
     public Boolean getFavorite() {
@@ -85,12 +118,36 @@ public class Image implements IDownloadableImage {
         return nsfw;
     }
 
-    public Integer getVote() {
-        return vote;
+    public Integer getCommentCount() {
+        return commentCount;
+    }
+
+    public String getSection() {
+        return section;
     }
 
     public String getAccountUrl() {
         return accountUrl;
+    }
+
+    public String getAccountId() {
+        return accountId;
+    }
+
+    public Integer getUps() {
+        return ups;
+    }
+
+    public Integer getDowns() {
+        return downs;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public Boolean getIsAlbum() {
+        return isAlbum;
     }
 
     @Override
@@ -99,12 +156,12 @@ public class Image implements IDownloadableImage {
     }
 
     @Override
-    public String GetThumbnailDownloadUrl() {
+    public String getThumbnailDownloadUrl() {
         return ImageUrlHelper.CreateThumbnailUrl(getLink());
     }
 
     @Override
-    public String GetFullSizeDownloadUrl() {
+    public String getFullSizeDownloadUrl() {
         return getLink();
     }
 }

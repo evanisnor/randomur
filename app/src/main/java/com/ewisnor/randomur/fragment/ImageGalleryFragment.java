@@ -12,7 +12,6 @@ import android.widget.GridView;
 import com.ewisnor.randomur.R;
 import com.ewisnor.randomur.data.ThumbnailAdapter;
 
-
 public class ImageGalleryFragment extends Fragment {
 
     public static ImageGalleryFragment newInstance() {

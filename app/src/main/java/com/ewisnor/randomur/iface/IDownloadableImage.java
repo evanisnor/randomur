@@ -19,11 +19,11 @@ public interface IDownloadableImage {
      * Obtain the full download link for the thumbnail image
      * @return
      */
-    String GetThumbnailDownloadUrl();
+    String getThumbnailDownloadUrl();
 
     /**
      * Obtain the full download link for the full size image
      * @return
      */
-    String GetFullSizeDownloadUrl();
+    String getFullSizeDownloadUrl();
 }
