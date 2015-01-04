@@ -1,9 +1,7 @@
 package com.ewisnor.randomur.ui;
 
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -20,22 +18,12 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_random_image);
 
-        Integer screenWidth = getScreenWidth();
-
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, ThumbnailGridFragment.newInstance())
                     .commit();
         }
     }
-
-    private Integer getScreenWidth() {
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        return size.x;
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -1,8 +1,6 @@
 package com.ewisnor.randomur.imgur;
 
-import com.ewisnor.randomur.application.RandomurLogger;
 import com.ewisnor.randomur.imgur.model.BasicImages;
-import com.ewisnor.randomur.imgur.model.GalleryAlbum;
 import com.ewisnor.randomur.util.HttpHelper;
 import com.ewisnor.randomur.util.JsonHelper;
 import com.ewisnor.randomur.util.Pair;
