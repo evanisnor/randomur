@@ -40,7 +40,6 @@ public class ThumbnailGridFragment extends Fragment implements GridView.OnScroll
     private static final String STATE_PAGE = "statePage";
 
     private View view;
-    private RandomurApp appContext;
     private ThumbnailAdapter adapter;
     private Integer page;
     private Boolean userScrolled;
@@ -67,7 +66,7 @@ public class ThumbnailGridFragment extends Fragment implements GridView.OnScroll
 
         GridView gridview = (GridView) view.findViewById(R.id.imageGrid);
         Integer columnWidth = getColumnWidth();
-        adapter = new ThumbnailAdapter(getActivity().getApplicationContext(), thumbnailClickListener, columnWidth);
+//        adapter = new ThumbnailAdapter(getActivity().getApplicationContext(), thumbnailClickListener, columnWidth);
         gridview.setColumnWidth(columnWidth);
         gridview.setOnScrollListener(this);
         gridview.setAdapter(adapter);
@@ -92,7 +91,7 @@ public class ThumbnailGridFragment extends Fragment implements GridView.OnScroll
         }
         else {
             RandomurLogger.info("Refreshing the thumbnail grid");
-            appContext.getImageCache().cleanUp();
+            adapter.clear();
             page = 0;
             isSetToRefresh = false;
             fetchThumbnails();
@@ -136,7 +135,7 @@ public class ThumbnailGridFragment extends Fragment implements GridView.OnScroll
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        appContext = (RandomurApp) activity.getApplicationContext();
+
         try {
             thumbnailClickListener = (OnThumbnailClickListener) activity;
             networkInterruptionListener = (OnNetworkInterruptionListener) activity;
@@ -145,6 +144,9 @@ public class ThumbnailGridFragment extends Fragment implements GridView.OnScroll
             throw new ClassCastException(activity.toString()
                     + " must implement all interfaces. " + e.getMessage());
         }
+
+        Integer columnWidth = getColumnWidth();
+        adapter = new ThumbnailAdapter(activity.getApplicationContext(), thumbnailClickListener, columnWidth);
     }
 
     @Override

@@ -39,7 +39,7 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, thumbnailGridFragment)
+                    .add(R.id.container, thumbnailGridFragment, "thumbnailGridFragment")
                     .commit();
         }
     }
@@ -56,7 +56,8 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         int id = item.getItemId();
 
         if (id == R.id.action_refresh) {
-            thumbnailGridFragment.refresh();
+            ThumbnailGridFragment f = (ThumbnailGridFragment) getSupportFragmentManager().findFragmentByTag("thumbnailGridFragment");
+            f.refresh();
         }
 
         return super.onOptionsItemSelected(item);
@@ -65,14 +66,14 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
     public void showNetworkInterruption() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.hide(thumbnailGridFragment);
-        transaction.add(R.id.container, networkInterruptionFragment);
+        transaction.add(R.id.container, networkInterruptionFragment, "networkInterruptionFragment");
         transaction.commit();
     }
 
     public void hideNetworkInterruption() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.hide(networkInterruptionFragment);
-        transaction.add(R.id.container, thumbnailGridFragment);
+        transaction.add(R.id.container, thumbnailGridFragment, "thumbnailGridFragment");
         transaction.commit();
     }
 

@@ -37,12 +37,8 @@ public class ThumbnailAdapter extends BaseAdapter {
         this.imageWidth = imageWidth;
     }
 
-    /**
-     * Set the width of images.
-     * @param imageWidth Width, in pixels, of each image when rendered
-     */
-    public void setImageWidth(Integer imageWidth) {
-        this.imageWidth = imageWidth;
+    public void clear() {
+        appContext.getImageCache().cleanUp();
     }
 
     @Override
