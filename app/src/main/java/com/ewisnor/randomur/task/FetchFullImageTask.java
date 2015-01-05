@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import com.ewisnor.randomur.application.RandomurApp;
 import com.ewisnor.randomur.application.RandomurLogger;
 import com.ewisnor.randomur.iface.OnImageDownloadedListener;
+import com.ewisnor.randomur.iface.OnNetworkInterruptionListener;
 import com.ewisnor.randomur.imgur.model.GalleryImage;
 import com.ewisnor.randomur.util.HttpHelper;
 import com.ewisnor.randomur.util.Pair;
@@ -24,10 +25,12 @@ public class FetchFullImageTask extends AsyncTask<Integer, Void, Bitmap> {
 
     private RandomurApp appContext;
     private OnImageDownloadedListener imageDownloadedListener;
+    private OnNetworkInterruptionListener networkInterruptionListener;
 
-    public FetchFullImageTask(Context context, OnImageDownloadedListener imageDownloadedListener) {
+    public FetchFullImageTask(Context context, OnImageDownloadedListener imageDownloadedListener, OnNetworkInterruptionListener networkInterruptionListener) {
         this.appContext = (RandomurApp) context.getApplicationContext();
         this.imageDownloadedListener = imageDownloadedListener;
+        this.networkInterruptionListener = networkInterruptionListener;
     }
 
     @Override
@@ -62,6 +65,9 @@ public class FetchFullImageTask extends AsyncTask<Integer, Void, Bitmap> {
         }
         catch (IOException ioe) {
             RandomurLogger.error("Failed to fetch full size image " + meta.getId());
+            if (networkInterruptionListener != null) {
+                networkInterruptionListener.onNetworkInterruption();
+            }
         }
 
         return null;

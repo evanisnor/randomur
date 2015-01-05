@@ -1,5 +1,6 @@
 package com.ewisnor.randomur.ui.fragment;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
@@ -14,6 +15,7 @@ import com.ewisnor.randomur.R;
 import com.ewisnor.randomur.application.RandomurApp;
 import com.ewisnor.randomur.application.RandomurLogger;
 import com.ewisnor.randomur.iface.OnImageDownloadedListener;
+import com.ewisnor.randomur.iface.OnNetworkInterruptionListener;
 import com.ewisnor.randomur.task.FetchFullImageTask;
 
 /**
@@ -26,6 +28,7 @@ public class FullImageDialogFragment extends DialogFragment implements OnImageDo
     public static final String IMAGE_ID_ARGUMENT = "imageIdArgument";
     public static final String STATE_IMAGE = "stateImage";
 
+    private OnNetworkInterruptionListener networkInterruptionListener;
     private View view;
     private Bitmap image;
 
@@ -42,7 +45,7 @@ public class FullImageDialogFragment extends DialogFragment implements OnImageDo
 
         if (savedInstanceState == null) {
             RandomurApp appContext = (RandomurApp) getActivity().getApplication();
-            new FetchFullImageTask(appContext, this).execute(imageId);
+            new FetchFullImageTask(appContext, this, networkInterruptionListener).execute(imageId);
         }
         else {
             onRestoreInstanceState(savedInstanceState);
@@ -65,6 +68,19 @@ public class FullImageDialogFragment extends DialogFragment implements OnImageDo
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(STATE_IMAGE, image);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            networkInterruptionListener = (OnNetworkInterruptionListener) activity;
+        }
+        catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement all interfaces. " + e.getMessage());
+        }
     }
 
     /**

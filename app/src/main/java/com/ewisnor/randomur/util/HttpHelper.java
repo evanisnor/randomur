@@ -22,7 +22,10 @@ import java.io.InputStream;
  */
 public class HttpHelper {
 
-    public static final int TIMEOUT_MS = 30000; //  30 second timeout
+    /**
+     * 30 second connection timeout
+     */
+    public static final int TIMEOUT_MS = 30000;
 
     /**
      * Create a new HTTP client with timeout parameters defined by HttpHelper
@@ -39,22 +42,11 @@ public class HttpHelper {
      * Send an HTTP GET request. Returns null if an error has been encountered.
      * @param request GET request
      * @return HttpResponse
+     * @throws IOException
      */
-    private static HttpResponse get(HttpGet request) {
+    private static HttpResponse get(HttpGet request) throws IOException {
         HttpClient client = createHttpClient();
-        HttpResponse response = null;
-
-        try {
-            response = client.execute(request);
-        }
-        catch (ClientProtocolException cpe) {
-            RandomurLogger.error("Client Protocol Exception encountered" + cpe.getMessage());
-        }
-        catch (IOException ioe) {
-            RandomurLogger.error("IOException encountered" + ioe.getMessage());
-        }
-
-        return response;
+        return client.execute(request);
     }
 
     /**
