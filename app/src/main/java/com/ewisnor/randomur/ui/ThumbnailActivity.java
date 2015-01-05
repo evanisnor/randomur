@@ -1,5 +1,9 @@
 package com.ewisnor.randomur.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
@@ -10,6 +14,7 @@ import com.ewisnor.randomur.R;
 import com.ewisnor.randomur.application.RandomurLogger;
 import com.ewisnor.randomur.iface.OnNetworkInterruptionListener;
 import com.ewisnor.randomur.iface.OnThumbnailClickListener;
+import com.ewisnor.randomur.receiver.NetworkConnectivityReceiver;
 import com.ewisnor.randomur.ui.fragment.FullImageDialogFragment;
 import com.ewisnor.randomur.ui.fragment.NetworkInterruptionFragment;
 import com.ewisnor.randomur.ui.fragment.ThumbnailGridFragment;
@@ -22,10 +27,12 @@ import com.ewisnor.randomur.ui.fragment.ThumbnailGridFragment;
  * Created by evan on 2015-01-02.
  */
 public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailClickListener, OnNetworkInterruptionListener {
+    private static final String STATE_IS_CONNECTED = "stateIsConnected";
 
     private FullImageDialogFragment fullImageDialog;
     private ThumbnailGridFragment thumbnailGridFragment;
     private NetworkInterruptionFragment networkInterruptionFragment;
+    private Boolean isConnected;
 
     public ThumbnailActivity() {
         this.thumbnailGridFragment = new ThumbnailGridFragment();
@@ -40,8 +47,32 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, thumbnailGridFragment, "thumbnailGridFragment")
+                    .add(R.id.container, networkInterruptionFragment, "networkInterruptionFragment")
+                    .hide(networkInterruptionFragment)
                     .commit();
+            isConnected = NetworkConnectivityReceiver.isConnected(this);
         }
+        else {
+            isConnected = savedInstanceState.getBoolean(STATE_IS_CONNECTED);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(STATE_IS_CONNECTED, isConnected);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(connectivityReceiver, new IntentFilter(NetworkConnectivityReceiver.CONNECTIVITY_INTENT_ACTION));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(connectivityReceiver);
     }
 
     @Override
@@ -63,17 +94,27 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         return super.onOptionsItemSelected(item);
     }
 
+    public void setConnectivityStatus(Boolean isConnected) {
+        if (this.isConnected && !isConnected) {
+            showNetworkInterruption();
+        }
+        else if (!this.isConnected && isConnected) {
+            hideNetworkInterruption();
+        }
+        this.isConnected = isConnected;
+    }
+
     public void showNetworkInterruption() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.hide(thumbnailGridFragment);
-        transaction.add(R.id.container, networkInterruptionFragment, "networkInterruptionFragment");
+        transaction.show(networkInterruptionFragment);
         transaction.commit();
     }
 
     public void hideNetworkInterruption() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.hide(networkInterruptionFragment);
-        transaction.add(R.id.container, thumbnailGridFragment, "thumbnailGridFragment");
+        transaction.show(thumbnailGridFragment);
         transaction.commit();
     }
 
@@ -95,4 +136,16 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
 
         showNetworkInterruption();
     }
+
+    private BroadcastReceiver connectivityReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(NetworkConnectivityReceiver.CONNECTIVITY_INTENT_ACTION)) {
+                Boolean isConnected = intent.getBooleanExtra(NetworkConnectivityReceiver.IS_CONNECTED_EXTRA, false);
+                setConnectivityStatus(isConnected);
+            }
+        }
+
+    };
 }
