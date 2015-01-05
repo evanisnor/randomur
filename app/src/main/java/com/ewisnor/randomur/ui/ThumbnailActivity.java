@@ -39,6 +39,7 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
     public ThumbnailActivity() {
         this.thumbnailGridFragment = new ThumbnailGridFragment();
         this.networkInterruptionFragment = new NetworkInterruptionFragment();
+        this.isConnected = true;
     }
 
     @Override
@@ -48,14 +49,14 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, thumbnailGridFragment, "thumbnailGridFragment")
                     .add(R.id.container, networkInterruptionFragment, "networkInterruptionFragment")
-                    .hide(networkInterruptionFragment)
+                    .add(R.id.container, thumbnailGridFragment, "thumbnailGridFragment")
                     .commit();
-            isConnected = NetworkConnectivityReceiver.isConnected(this);
+            setConnectivityStatus(NetworkConnectivityReceiver.isConnected(this));
         }
         else {
-            isConnected = savedInstanceState.getBoolean(STATE_IS_CONNECTED);
+            Boolean isConnected = savedInstanceState.getBoolean(STATE_IS_CONNECTED);
+            setConnectivityStatus((isConnected == null) ? this.isConnected : isConnected);
         }
     }
 
