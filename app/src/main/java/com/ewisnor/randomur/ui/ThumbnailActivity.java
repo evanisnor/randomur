@@ -24,6 +24,8 @@ import com.ewisnor.randomur.ui.fragment.ThumbnailGridFragment;
  * This activity handles grid clicks so the FullImageDialogFragment can be shown to display full size
  * images in full screen.
  *
+ * Also shows a fragment upon network connectivity loss.
+ *
  * Created by evan on 2015-01-02.
  */
 public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailClickListener, OnNetworkInterruptionListener {
@@ -94,7 +96,22 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         return super.onOptionsItemSelected(item);
     }
 
-    public void setConnectivityStatus(Boolean isConnected) {
+    @Override
+    public void onThumbnailClick(int id) {
+        RandomurLogger.debug("Clicked on thumbnail " + id);
+        fullImageDialog = new FullImageDialogFragment();
+        Bundle b = new Bundle();
+        b.putInt(FullImageDialogFragment.IMAGE_ID_ARGUMENT, id);
+        fullImageDialog.setArguments(b);
+        fullImageDialog.show(getFragmentManager(), "");
+    }
+
+    /**
+     * Set the connectivity status for the Activity. Will show the network interruption fragment
+     * if the connection was lost, and will hide it when the device is connected.
+     * @param isConnected True if connected to the internet
+     */
+    private void setConnectivityStatus(Boolean isConnected) {
         if (this.isConnected && !isConnected) {
             showNetworkInterruption();
         }
@@ -104,28 +121,24 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         this.isConnected = isConnected;
     }
 
-    public void showNetworkInterruption() {
+    /**
+     * Show the Network Interruption fragment and hide the thumbnail grid.
+     */
+    private void showNetworkInterruption() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.hide(thumbnailGridFragment);
         transaction.show(networkInterruptionFragment);
         transaction.commit();
     }
 
-    public void hideNetworkInterruption() {
+    /**
+     * Hide the Network Interruption fragment and show the thumbnail grid.
+     */
+    private void hideNetworkInterruption() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.hide(networkInterruptionFragment);
         transaction.show(thumbnailGridFragment);
         transaction.commit();
-    }
-
-    @Override
-    public void onThumbnailClick(int id) {
-        RandomurLogger.debug("Clicked on thumbnail " + id);
-        fullImageDialog = new FullImageDialogFragment();
-        Bundle b = new Bundle();
-        b.putInt(FullImageDialogFragment.IMAGE_ID_ARGUMENT, id);
-        fullImageDialog.setArguments(b);
-        fullImageDialog.show(getFragmentManager(), "");
     }
 
     @Override
@@ -137,6 +150,9 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         showNetworkInterruption();
     }
 
+    /**
+     * Receiver for connectivity intents (broadcast by the NetworkConnectivityReceiver)
+     */
     private BroadcastReceiver connectivityReceiver = new BroadcastReceiver() {
 
         @Override
