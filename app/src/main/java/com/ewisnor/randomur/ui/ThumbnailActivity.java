@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.ewisnor.randomur.R;
+import com.ewisnor.randomur.application.RandomurApp;
 import com.ewisnor.randomur.application.RandomurLogger;
 import com.ewisnor.randomur.iface.OnNetworkInterruptionListener;
 import com.ewisnor.randomur.iface.OnThumbnailClickListener;
@@ -140,15 +141,21 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         transaction.hide(networkInterruptionFragment);
         transaction.show(thumbnailGridFragment);
         transaction.commit();
+
+        // The app probably started without a network connection, so the thumbnail cache is empty.
+        // Do a refresh to grab them automatically so the user isn't left with a blank grid.
+        if (((RandomurApp) getApplication()).getImageCache().countThumbnails() == 0) {
+            thumbnailGridFragment.refresh();
+        }
     }
 
     @Override
     public void onNetworkInterruption() {
-        if (fullImageDialog != null) {
+        Boolean isConnected = NetworkConnectivityReceiver.isConnected(this);
+        if (fullImageDialog != null && !isConnected) {
             fullImageDialog.dismiss();
         }
-
-        showNetworkInterruption();
+        setConnectivityStatus(isConnected);
     }
 
     /**
