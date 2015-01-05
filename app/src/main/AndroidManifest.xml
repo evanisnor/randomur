@@ -3,6 +3,7 @@
     package="com.ewisnor.randomur" >
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
 
     <application
         android:name=".application.RandomurApp"

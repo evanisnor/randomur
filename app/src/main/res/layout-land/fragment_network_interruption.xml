@@ -1,0 +1,44 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#000000"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="5dp"
+    tools:context="com.ewisnor.randomur.ui.fragment.NetworkInterruptionFragment">
+
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:id="@+id/networkImageView"
+        android:src="@drawable/wifi_icon"
+        android:layout_gravity="center"
+        android:padding="5dp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="5dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/network_interruption_header"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:padding="5dp"
+            android:textColor="#ffffff"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="@string/network_interruption_subtext"
+            android:gravity="center_horizontal"
+            android:padding="5dp"
+            android:textColor="#ffffff"/>
+    </LinearLayout>
+
+</LinearLayout>
