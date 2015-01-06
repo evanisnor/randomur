@@ -101,10 +101,18 @@ public class ImageCache {
         this.currentPage = currentPage;
     }
 
+    /**
+     * Set the first visible image position
+     * @param position First visible position
+     */
     public void setFirstVisiblePosition(Integer position) {
         this.firstVisiblePosition = position;
     }
 
+    /**
+     * Get the previous first visible image position
+     * @return First visible position
+     */
     public int getFirstVisiblePosition() {
         return this.firstVisiblePosition;
     }

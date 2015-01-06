@@ -52,10 +52,18 @@ public class ThumbnailAdapter extends BaseAdapter {
         return appContext.getImageCache().getCurrentPage();
     }
 
+    /**
+     * Set the first visible position of the view - to be stored in the ImageCache instance
+     * @param position First visible position
+     */
     public void setFirstVisiblePosition(Integer position) {
         appContext.getImageCache().setFirstVisiblePosition(position);
     }
 
+    /**
+     * Get the previous first visible position of the view
+     * @return First visible position
+     */
     public int getFirstVisiblePosition() {
         return appContext.getImageCache().getFirstVisiblePosition();
     }
