@@ -85,6 +85,9 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_thumbnail, menu);
+
+        MenuItem refresh = menu.findItem(R.id.action_refresh);
+        refresh.setEnabled(isConnected);
         return true;
     }
 
@@ -142,6 +145,7 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         }
 
         transaction.commit();
+        invalidateOptionsMenu();
     }
 
     /**
@@ -167,6 +171,7 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         if (((RandomurApp) getApplication()).getImageCache().countThumbnails() == 0) {
             ((ThumbnailGridFragment)thumbnailGridFragment).refresh();
         }
+        invalidateOptionsMenu();
     }
 
     @Override
