@@ -36,13 +36,16 @@ public class ThumbnailGridFragment extends Fragment implements GridView.OnScroll
     /* Desired grid column width in DP */
     private static final Integer COLUMN_WIDTH_DP = 125;
 
-    private static final String STATE_VISIBLE_POSITION = "stateVisiblePosition";
+//    private static final String STATE_VISIBLE_POSITION = "stateVisiblePosition";
 
     private View view;
     private ThumbnailAdapter adapter;
     private Boolean userScrolled;
+
     private OnThumbnailClickListener thumbnailClickListener;
     private OnNetworkInterruptionListener networkInterruptionListener;
+    private OnCacheThumbnailsFinishedListener activityOnCacheThumbnailsFinishedListener;
+
     private AsyncTask runningTask;
     private Boolean isSetToRefresh;
     private GridView gridview;
@@ -136,6 +139,7 @@ public class ThumbnailGridFragment extends Fragment implements GridView.OnScroll
         try {
             thumbnailClickListener = (OnThumbnailClickListener) activity;
             networkInterruptionListener = (OnNetworkInterruptionListener) activity;
+            activityOnCacheThumbnailsFinishedListener = (OnCacheThumbnailsFinishedListener) activity;
         }
         catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
@@ -163,6 +167,7 @@ public class ThumbnailGridFragment extends Fragment implements GridView.OnScroll
 
     @Override
     public void onCacheThumbnailsFinished() {
+        activityOnCacheThumbnailsFinishedListener.onCacheThumbnailsFinished();
         runningTask = null;
         if (isSetToRefresh) {
             refresh();

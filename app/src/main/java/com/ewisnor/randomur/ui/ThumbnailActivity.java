@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import com.ewisnor.randomur.R;
 import com.ewisnor.randomur.application.RandomurApp;
 import com.ewisnor.randomur.application.RandomurLogger;
+import com.ewisnor.randomur.iface.OnCacheThumbnailsFinishedListener;
 import com.ewisnor.randomur.iface.OnNetworkInterruptionListener;
 import com.ewisnor.randomur.iface.OnThumbnailClickListener;
 import com.ewisnor.randomur.receiver.NetworkConnectivityReceiver;
@@ -31,19 +32,24 @@ import com.ewisnor.randomur.ui.fragment.ThumbnailGridFragment;
  *
  * Created by evan on 2015-01-02.
  */
-public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailClickListener, OnNetworkInterruptionListener {
+public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailClickListener, OnNetworkInterruptionListener, OnCacheThumbnailsFinishedListener {
     /** State ID for storing the isConnected boolean */
     private static final String STATE_IS_CONNECTED = "stateIsConnected";
+
+    /** State ID for storing the isLoading boolean */
+    private static final String STATE_IS_LOADING = "stateIsLoading";
 
     /** Fragment tags */
     private static final String NETWORK_INTERRUPTION_FRAGMENT_TAG = "networkInterruptionFragment";
     private static final String THUMBNAIL_GRID_FRAGMENT_TAG = "thumbnailGridFragment";
     private static final String FULL_IMAGE_DIALOGFRAGMENT_TAG = "fullImageDialogFragment";
 
-    private Boolean isConnected; //Saved to state and recalled during onCreate
+    private Boolean isConnected;
+    private Boolean isLoading;
 
     public ThumbnailActivity() {
         this.isConnected = true;
+        this.isLoading = true;
     }
 
     @Override
@@ -59,6 +65,7 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         Boolean isConnected = NetworkConnectivityReceiver.isConnected(this);
         if (savedInstanceState != null) {
             isConnected = savedInstanceState.getBoolean(STATE_IS_CONNECTED);
+            this.isLoading = savedInstanceState.getBoolean(STATE_IS_LOADING);
         }
         if (!isConnected) {
             showNetworkInterruption();
@@ -69,6 +76,7 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(STATE_IS_CONNECTED, isConnected);
+        outState.putBoolean(STATE_IS_LOADING, isLoading);
     }
 
     @Override
@@ -101,6 +109,7 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_thumbnail, menu);
+        menu.findItem(R.id.action_loading).setVisible(isLoading);
         return true;
     }
 
@@ -111,6 +120,7 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         if (id == R.id.action_refresh) {
             ThumbnailGridFragment f = (ThumbnailGridFragment) getFragmentManager().findFragmentByTag(THUMBNAIL_GRID_FRAGMENT_TAG);
             f.refresh();
+            setLoadingStatus(true);
             hideNetworkInterruption();
         }
 
@@ -125,6 +135,11 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         b.putInt(FullImageDialogFragment.IMAGE_ID_ARGUMENT, id);
         fullImageDialog.setArguments(b);
         fullImageDialog.show(getFragmentManager(), FULL_IMAGE_DIALOGFRAGMENT_TAG);
+    }
+
+    @Override
+    public void onCacheThumbnailsFinished() {
+        setLoadingStatus(false);
     }
 
     /**
@@ -149,6 +164,15 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
             }
         }
         this.isConnected = isConnected;
+    }
+
+    /**
+     * Sets the isLoading state and refreshes the menu.
+     * @param isLoading True if the thumbnail grid is fetching thumbnails
+     */
+    private void setLoadingStatus(Boolean isLoading) {
+        invalidateOptionsMenu();
+        this.isLoading = isLoading;
     }
 
     /**
@@ -212,10 +236,10 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
 
         @Override
         public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals(NetworkConnectivityReceiver.CONNECTIVITY_INTENT_ACTION)) {
-            Boolean isConnected = intent.getBooleanExtra(NetworkConnectivityReceiver.IS_CONNECTED_EXTRA, false);
-            setConnectivityStatus(isConnected);
-        }
+            if (intent.getAction().equals(NetworkConnectivityReceiver.CONNECTIVITY_INTENT_ACTION)) {
+                Boolean isConnected = intent.getBooleanExtra(NetworkConnectivityReceiver.IS_CONNECTED_EXTRA, false);
+                setConnectivityStatus(isConnected);
+            }
         }
 
     };
