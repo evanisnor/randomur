@@ -32,13 +32,15 @@ import com.ewisnor.randomur.ui.fragment.ThumbnailGridFragment;
  * Created by evan on 2015-01-02.
  */
 public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailClickListener, OnNetworkInterruptionListener {
+    /** State ID for storing the isConnected boolean */
     private static final String STATE_IS_CONNECTED = "stateIsConnected";
 
+    /** Fragment tags */
     private static final String NETWORK_INTERRUPTION_FRAGMENT_TAG = "networkInterruptionFragment";
     private static final String THUMBNAIL_GRID_FRAGMENT_TAG = "thumbnailGridFragment";
     private static final String FULL_IMAGE_DIALOGFRAGMENT_TAG = "fullImageDialogFragment";
 
-    private Boolean isConnected;
+    private Boolean isConnected; //Saved to state and recalled during onCreate
 
     public ThumbnailActivity() {
         this.isConnected = true;
@@ -130,6 +132,7 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
 
     /**
      * Show the Network Interruption fragment and hide the thumbnail grid.
+     * Refreshes the menu as well.
      */
     private void showNetworkInterruption() {
         FragmentManager fm = getFragmentManager();
@@ -150,6 +153,7 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
 
     /**
      * Hide the Network Interruption fragment and show the thumbnail grid.
+     * Refreshes the menu and refreshes the thumbnail grid if it's empty.
      */
     private void hideNetworkInterruption() {
         FragmentManager fm = getFragmentManager();
@@ -166,7 +170,7 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
 
         transaction.commit();
 
-        // The app probably started without a network connection, so the thumbnail cache is empty.
+        // The app might have started without a network connection, so the thumbnail cache is empty.
         // Do a refresh to grab them automatically so the user isn't left with a blank grid.
         if (((RandomurApp) getApplication()).getImageCache().countThumbnails() == 0) {
             ((ThumbnailGridFragment)thumbnailGridFragment).refresh();
@@ -174,9 +178,14 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         invalidateOptionsMenu();
     }
 
+    /**
+     * This is the callback for when downloading an image failed with an IOException of some kind.
+     * Probably because the network connection dropped and the NetworkConnectivityReceiver hadn't fired yet.
+     * Both methods of handling connectivity are needed.
+     */
     @Override
     public void onNetworkInterruption() {
-        Boolean isConnected = NetworkConnectivityReceiver.isConnected(this);
+        Boolean isConnected = false; // This callback is only fired when connectivity is lost
         FullImageDialogFragment fullImageDialog = (FullImageDialogFragment) getFragmentManager().findFragmentByTag(FULL_IMAGE_DIALOGFRAGMENT_TAG);
         if (fullImageDialog != null && !isConnected) {
             fullImageDialog.dismiss();
