@@ -26,10 +26,14 @@ public class ImageCache {
 
     private LruCache<Integer, Bitmap> thumbnailCache;
     private LruCache<Integer, GalleryImage> imageMetaCache;
+    private Integer currentPage;
+    private Integer firstVisiblePosition;
 
     public ImageCache() {
         this.thumbnailCache = new LruCache<>(thumbnailCacheSize);
         this.imageMetaCache = new LruCache<>(imageMetaCacheSize);
+        this.currentPage = 0;
+        this.firstVisiblePosition = 0;
     }
 
     /**
@@ -82,10 +86,35 @@ public class ImageCache {
     }
 
     /**
+     * Get the current page of images
+     * @return
+     */
+    public Integer getCurrentPage() {
+        return currentPage;
+    }
+
+    /**
+     * Set the current page of images
+     * @param currentPage
+     */
+    public void setCurrentPage(Integer currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public void setFirstVisiblePosition(Integer position) {
+        this.firstVisiblePosition = position;
+    }
+
+    public int getFirstVisiblePosition() {
+        return this.firstVisiblePosition;
+    }
+
+    /**
      * Clear all images from memory cache
      */
     public void cleanUp() {
         this.thumbnailCache.evictAll();
         this.imageMetaCache.evictAll();
+        this.currentPage = 0;
     }
 }

@@ -36,19 +36,18 @@ public class ThumbnailGridFragment extends Fragment implements GridView.OnScroll
     /* Desired grid column width in DP */
     private static final Integer COLUMN_WIDTH_DP = 125;
 
-    private static final String STATE_PAGE = "statePage";
+    private static final String STATE_VISIBLE_POSITION = "stateVisiblePosition";
 
     private View view;
     private ThumbnailAdapter adapter;
-    private Integer page;
     private Boolean userScrolled;
     private OnThumbnailClickListener thumbnailClickListener;
     private OnNetworkInterruptionListener networkInterruptionListener;
     private AsyncTask runningTask;
     private Boolean isSetToRefresh;
+    private GridView gridview;
 
     public ThumbnailGridFragment() {
-        this.page = 0;
         this.userScrolled = false;
         this.isSetToRefresh = false;
     }
@@ -63,19 +62,17 @@ public class ThumbnailGridFragment extends Fragment implements GridView.OnScroll
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_thumbnail_grid, container, false);
 
-        GridView gridview = (GridView) view.findViewById(R.id.imageGrid);
+        gridview = (GridView) view.findViewById(R.id.imageGrid);
         Integer columnWidth = getColumnWidth();
-//        adapter = new ThumbnailAdapter(getActivity().getApplicationContext(), thumbnailClickListener, columnWidth);
         gridview.setColumnWidth(columnWidth);
         gridview.setOnScrollListener(this);
         gridview.setAdapter(adapter);
+        gridview.setSelection(adapter.getFirstVisiblePosition());
 
         if (savedInstanceState == null) {
             fetchThumbnails();
         }
-        else {
-            onRestoreInstanceState(savedInstanceState);
-        }
+
         return view;
     }
 
@@ -91,7 +88,6 @@ public class ThumbnailGridFragment extends Fragment implements GridView.OnScroll
         else {
             RandomurLogger.info("Refreshing the thumbnail grid");
             adapter.clear();
-            page = 0;
             isSetToRefresh = false;
             fetchThumbnails();
         }
@@ -119,16 +115,9 @@ public class ThumbnailGridFragment extends Fragment implements GridView.OnScroll
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(STATE_PAGE, page);
-    }
-
-    /**
-     * To be called when savedInstanceState is not null -- Probably because the device screen orientation
-     * changed.
-     * @param savedInstanceState State bundle
-     */
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        page = savedInstanceState.getInt(STATE_PAGE);
+        if (gridview != null && adapter != null) {
+            adapter.setFirstVisiblePosition(gridview.getFirstVisiblePosition() + 1);
+        }
     }
 
     @Override
@@ -176,8 +165,9 @@ public class ThumbnailGridFragment extends Fragment implements GridView.OnScroll
      * thumbnail is available. The ThumbnailActivity is set up to handle network problems.
      */
     private void fetchThumbnails() {
+        Integer page = adapter.getPage();
         if (adapter != null && page <= ImgurApi.MAX_RANDOM_PAGES && runningTask == null) {
-            runningTask = new CacheThumbnailsTask(getActivity().getApplicationContext(), adapter, networkInterruptionListener, this).execute(page++);
+            runningTask = new CacheThumbnailsTask(getActivity().getApplicationContext(), adapter, networkInterruptionListener, this).execute(page + 1);
         }
     }
 }

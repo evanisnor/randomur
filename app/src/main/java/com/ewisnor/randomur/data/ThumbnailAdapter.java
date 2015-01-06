@@ -37,8 +37,27 @@ public class ThumbnailAdapter extends BaseAdapter {
         this.imageWidth = imageWidth;
     }
 
+    /**
+     * Clear the adapter by emptying the ImageCache
+     */
     public void clear() {
         appContext.getImageCache().cleanUp();
+    }
+
+    /**
+     * Get the current page of images
+     * @return Current page
+     */
+    public int getPage() {
+        return appContext.getImageCache().getCurrentPage();
+    }
+
+    public void setFirstVisiblePosition(Integer position) {
+        appContext.getImageCache().setFirstVisiblePosition(position);
+    }
+
+    public int getFirstVisiblePosition() {
+        return appContext.getImageCache().getFirstVisiblePosition();
     }
 
     @Override

@@ -96,6 +96,8 @@ public class CacheThumbnailsTask extends AsyncTask<Integer, Integer, Void> {
                     RandomurLogger.error("Imgur did not respond favorably to the request. (Status: " + status + ")");
                 }
             }
+
+            appContext.getImageCache().setCurrentPage(pageNumber);
         }
         catch (IOException ioe) {
             RandomurLogger.error("Failed to cache thumbnails" + ioe.getMessage());

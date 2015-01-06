@@ -61,9 +61,6 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         if (!isConnected) {
             showNetworkInterruption();
         }
-        else {
-            hideNetworkInterruption();
-        }
     }
 
     @Override
