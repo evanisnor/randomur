@@ -81,8 +81,7 @@ public class ThumbnailGridFragment extends Fragment implements GridView.OnScroll
      */
     public void refresh() {
         if (runningTask != null) {
-            RandomurLogger.info("Cancelling a running thumbnail fetch so the grid may be refreshed");
-            ((CacheThumbnailsTask) runningTask).cancel();
+            cancelRunningTask();
             isSetToRefresh = true;
         }
         else {
@@ -90,6 +89,16 @@ public class ThumbnailGridFragment extends Fragment implements GridView.OnScroll
             adapter.clear();
             isSetToRefresh = false;
             fetchThumbnails();
+        }
+    }
+
+    /**
+     * Cancel the running task. Used for refreshing the grid, or called by the Activity onDestroy.
+     */
+    public void cancelRunningTask() {
+        if (runningTask != null) {
+            RandomurLogger.info("Cancelling a running thumbnail fetch");
+            ((CacheThumbnailsTask) runningTask).cancel();
         }
     }
 

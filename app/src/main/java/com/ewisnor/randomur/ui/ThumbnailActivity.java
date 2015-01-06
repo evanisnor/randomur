@@ -83,13 +83,24 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         unregisterReceiver(connectivityReceiver);
     }
 
+    /**
+     * Makes sure that the thumbnail grid isn't running an AsyncTask because it will crash
+     * once it finishes and this Activity doesn't exist anymore.
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        FragmentManager fm = getFragmentManager();
+        Fragment thumbnailGridFragment = fm.findFragmentByTag(THUMBNAIL_GRID_FRAGMENT_TAG);
+        if (thumbnailGridFragment != null) {
+            ((ThumbnailGridFragment)thumbnailGridFragment).cancelRunningTask();
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_thumbnail, menu);
-
-        MenuItem refresh = menu.findItem(R.id.action_refresh);
-        refresh.setEnabled(isConnected);
         return true;
     }
 
@@ -132,7 +143,6 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
 
     /**
      * Show the Network Interruption fragment and hide the thumbnail grid.
-     * Refreshes the menu as well.
      */
     private void showNetworkInterruption() {
         FragmentManager fm = getFragmentManager();
@@ -148,12 +158,11 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         }
 
         transaction.commit();
-        invalidateOptionsMenu();
     }
 
     /**
      * Hide the Network Interruption fragment and show the thumbnail grid.
-     * Refreshes the menu and refreshes the thumbnail grid if it's empty.
+     * Refreshes the thumbnail grid if it's empty.
      */
     private void hideNetworkInterruption() {
         FragmentManager fm = getFragmentManager();
@@ -175,7 +184,6 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         if (((RandomurApp) getApplication()).getImageCache().countThumbnails() == 0) {
             ((ThumbnailGridFragment)thumbnailGridFragment).refresh();
         }
-        invalidateOptionsMenu();
     }
 
     /**
@@ -200,10 +208,10 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(NetworkConnectivityReceiver.CONNECTIVITY_INTENT_ACTION)) {
-                Boolean isConnected = intent.getBooleanExtra(NetworkConnectivityReceiver.IS_CONNECTED_EXTRA, false);
-                setConnectivityStatus(isConnected);
-            }
+        if (intent.getAction().equals(NetworkConnectivityReceiver.CONNECTIVITY_INTENT_ACTION)) {
+            Boolean isConnected = intent.getBooleanExtra(NetworkConnectivityReceiver.IS_CONNECTED_EXTRA, false);
+            setConnectivityStatus(isConnected);
+        }
         }
 
     };
