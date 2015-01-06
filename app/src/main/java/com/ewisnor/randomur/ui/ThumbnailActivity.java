@@ -1,11 +1,13 @@
 package com.ewisnor.randomur.ui;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,14 +34,13 @@ import com.ewisnor.randomur.ui.fragment.ThumbnailGridFragment;
 public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailClickListener, OnNetworkInterruptionListener {
     private static final String STATE_IS_CONNECTED = "stateIsConnected";
 
-    private FullImageDialogFragment fullImageDialog;
-    private ThumbnailGridFragment thumbnailGridFragment;
-    private NetworkInterruptionFragment networkInterruptionFragment;
+    private static final String NETWORK_INTERRUPTION_FRAGMENT_TAG = "networkInterruptionFragment";
+    private static final String THUMBNAIL_GRID_FRAGMENT_TAG = "thumbnailGridFragment";
+    private static final String FULL_IMAGE_DIALOGFRAGMENT_TAG = "fullImageDialogFragment";
+
     private Boolean isConnected;
 
     public ThumbnailActivity() {
-        this.thumbnailGridFragment = new ThumbnailGridFragment();
-        this.networkInterruptionFragment = new NetworkInterruptionFragment();
         this.isConnected = true;
     }
 
@@ -48,16 +49,20 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thumbnail);
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, networkInterruptionFragment, "networkInterruptionFragment")
-                    .add(R.id.container, thumbnailGridFragment, "thumbnailGridFragment")
-                    .commit();
-            setConnectivityStatus(NetworkConnectivityReceiver.isConnected(this));
+        getFragmentManager().beginTransaction()
+                .add(R.id.container, new NetworkInterruptionFragment(), NETWORK_INTERRUPTION_FRAGMENT_TAG)
+                .add(R.id.container, new ThumbnailGridFragment(), THUMBNAIL_GRID_FRAGMENT_TAG)
+                .commit();
+
+        Boolean isConnected = NetworkConnectivityReceiver.isConnected(this);
+        if (savedInstanceState != null) {
+            isConnected = savedInstanceState.getBoolean(STATE_IS_CONNECTED);
+        }
+        if (!isConnected) {
+            showNetworkInterruption();
         }
         else {
-            Boolean isConnected = savedInstanceState.getBoolean(STATE_IS_CONNECTED);
-            setConnectivityStatus((isConnected == null) ? this.isConnected : isConnected);
+            hideNetworkInterruption();
         }
     }
 
@@ -91,7 +96,7 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         int id = item.getItemId();
 
         if (id == R.id.action_refresh) {
-            ThumbnailGridFragment f = (ThumbnailGridFragment) getSupportFragmentManager().findFragmentByTag("thumbnailGridFragment");
+            ThumbnailGridFragment f = (ThumbnailGridFragment) getFragmentManager().findFragmentByTag(THUMBNAIL_GRID_FRAGMENT_TAG);
             f.refresh();
         }
 
@@ -101,11 +106,11 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
     @Override
     public void onThumbnailClick(int id) {
         RandomurLogger.debug("Clicked on thumbnail " + id);
-        fullImageDialog = new FullImageDialogFragment();
+        FullImageDialogFragment fullImageDialog = new FullImageDialogFragment();
         Bundle b = new Bundle();
         b.putInt(FullImageDialogFragment.IMAGE_ID_ARGUMENT, id);
         fullImageDialog.setArguments(b);
-        fullImageDialog.show(getFragmentManager(), "");
+        fullImageDialog.show(getFragmentManager(), FULL_IMAGE_DIALOGFRAGMENT_TAG);
     }
 
     /**
@@ -127,9 +132,18 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
      * Show the Network Interruption fragment and hide the thumbnail grid.
      */
     private void showNetworkInterruption() {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.hide(thumbnailGridFragment);
-        transaction.show(networkInterruptionFragment);
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+
+        Fragment thumbnailGridFragment = fm.findFragmentByTag(THUMBNAIL_GRID_FRAGMENT_TAG);
+        Fragment networkInterruptionFragment = fm.findFragmentByTag(NETWORK_INTERRUPTION_FRAGMENT_TAG);
+        if (thumbnailGridFragment != null && !thumbnailGridFragment.isHidden()) {
+            transaction.hide(thumbnailGridFragment);
+        }
+        if (networkInterruptionFragment != null) {
+            transaction.show(networkInterruptionFragment);
+        }
+
         transaction.commit();
     }
 
@@ -137,21 +151,31 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
      * Hide the Network Interruption fragment and show the thumbnail grid.
      */
     private void hideNetworkInterruption() {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.hide(networkInterruptionFragment);
-        transaction.show(thumbnailGridFragment);
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+
+        Fragment thumbnailGridFragment = fm.findFragmentByTag(THUMBNAIL_GRID_FRAGMENT_TAG);
+        Fragment networkInterruptionFragment = fm.findFragmentByTag(NETWORK_INTERRUPTION_FRAGMENT_TAG);
+        if (networkInterruptionFragment != null && !networkInterruptionFragment.isHidden()) {
+            transaction.hide(networkInterruptionFragment);
+        }
+        if (thumbnailGridFragment != null) {
+            transaction.show(thumbnailGridFragment);
+        }
+
         transaction.commit();
 
         // The app probably started without a network connection, so the thumbnail cache is empty.
         // Do a refresh to grab them automatically so the user isn't left with a blank grid.
         if (((RandomurApp) getApplication()).getImageCache().countThumbnails() == 0) {
-            thumbnailGridFragment.refresh();
+            ((ThumbnailGridFragment)thumbnailGridFragment).refresh();
         }
     }
 
     @Override
     public void onNetworkInterruption() {
         Boolean isConnected = NetworkConnectivityReceiver.isConnected(this);
+        FullImageDialogFragment fullImageDialog = (FullImageDialogFragment) getFragmentManager().findFragmentByTag(FULL_IMAGE_DIALOGFRAGMENT_TAG);
         if (fullImageDialog != null && !isConnected) {
             fullImageDialog.dismiss();
         }

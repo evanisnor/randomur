@@ -1,12 +1,12 @@
 package com.ewisnor.randomur.ui.fragment;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -17,7 +17,6 @@ import android.widget.AbsListView;
 import android.widget.GridView;
 
 import com.ewisnor.randomur.R;
-import com.ewisnor.randomur.application.RandomurApp;
 import com.ewisnor.randomur.application.RandomurLogger;
 import com.ewisnor.randomur.data.ThumbnailAdapter;
 import com.ewisnor.randomur.iface.OnCacheThumbnailsFinishedListener;
