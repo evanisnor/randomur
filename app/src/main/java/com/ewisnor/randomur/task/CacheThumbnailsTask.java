@@ -100,7 +100,7 @@ public class CacheThumbnailsTask extends AsyncTask<Integer, Integer, Void> {
             appContext.getImageCache().setCurrentPage(pageNumber);
         }
         catch (IOException ioe) {
-            RandomurLogger.error("Failed to cache thumbnails" + ioe.getMessage());
+            RandomurLogger.error("Failed to cache thumbnails: " + ioe.getMessage());
             if (networkInterruptionListener != null) {
                 networkInterruptionListener.onNetworkInterruption();
             }
