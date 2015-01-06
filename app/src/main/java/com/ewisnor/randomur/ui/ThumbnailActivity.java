@@ -111,6 +111,7 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         if (id == R.id.action_refresh) {
             ThumbnailGridFragment f = (ThumbnailGridFragment) getFragmentManager().findFragmentByTag(THUMBNAIL_GRID_FRAGMENT_TAG);
             f.refresh();
+            hideNetworkInterruption();
         }
 
         return super.onOptionsItemSelected(item);
@@ -132,11 +133,20 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
      * @param isConnected True if connected to the internet
      */
     private void setConnectivityStatus(Boolean isConnected) {
-        if (this.isConnected && !isConnected) {
+        if (!isConnected) {
             showNetworkInterruption();
         }
-        else if (!this.isConnected && isConnected) {
+        else {
             hideNetworkInterruption();
+
+            FragmentManager fm = getFragmentManager();
+            Fragment thumbnailGridFragment = fm.findFragmentByTag(THUMBNAIL_GRID_FRAGMENT_TAG);
+
+            // The app might have started without a network connection, so the thumbnail cache is empty.
+            // Do a refresh to grab them automatically so the user isn't left with a blank grid.
+            if (((RandomurApp) getApplication()).getImageCache().countThumbnails() == 0) {
+                ((ThumbnailGridFragment)thumbnailGridFragment).refresh();
+            }
         }
         this.isConnected = isConnected;
     }
@@ -152,8 +162,9 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         Fragment networkInterruptionFragment = fm.findFragmentByTag(NETWORK_INTERRUPTION_FRAGMENT_TAG);
         if (thumbnailGridFragment != null && !thumbnailGridFragment.isHidden()) {
             transaction.hide(thumbnailGridFragment);
+            ((ThumbnailGridFragment)thumbnailGridFragment).cancelRunningTask();
         }
-        if (networkInterruptionFragment != null) {
+        if (networkInterruptionFragment != null && networkInterruptionFragment.isHidden()) {
             transaction.show(networkInterruptionFragment);
         }
 
@@ -162,7 +173,6 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
 
     /**
      * Hide the Network Interruption fragment and show the thumbnail grid.
-     * Refreshes the thumbnail grid if it's empty.
      */
     private void hideNetworkInterruption() {
         FragmentManager fm = getFragmentManager();
@@ -173,17 +183,11 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
         if (networkInterruptionFragment != null && !networkInterruptionFragment.isHidden()) {
             transaction.hide(networkInterruptionFragment);
         }
-        if (thumbnailGridFragment != null) {
+        if (thumbnailGridFragment != null && thumbnailGridFragment.isHidden()) {
             transaction.show(thumbnailGridFragment);
         }
 
         transaction.commit();
-
-        // The app might have started without a network connection, so the thumbnail cache is empty.
-        // Do a refresh to grab them automatically so the user isn't left with a blank grid.
-        if (((RandomurApp) getApplication()).getImageCache().countThumbnails() == 0) {
-            ((ThumbnailGridFragment)thumbnailGridFragment).refresh();
-        }
     }
 
     /**
@@ -193,7 +197,7 @@ public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailC
      */
     @Override
     public void onNetworkInterruption() {
-        Boolean isConnected = false; // This callback is only fired when connectivity is lost
+        Boolean isConnected = false; // This callback is only fired when connectivity is lost, even if the device reports otherwise
         FullImageDialogFragment fullImageDialog = (FullImageDialogFragment) getFragmentManager().findFragmentByTag(FULL_IMAGE_DIALOGFRAGMENT_TAG);
         if (fullImageDialog != null && !isConnected) {
             fullImageDialog.dismiss();
