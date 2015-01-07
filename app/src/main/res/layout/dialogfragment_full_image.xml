@@ -15,12 +15,12 @@
 
     </LinearLayout>
 
-    <com.ewisnor.randomur.ui.view.ZoomableImageView
+    <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:visibility="invisible"
-        android:scaleType="fitCenter"/>
+        android:scaleType="fitXY"/>
 
 </RelativeLayout>
