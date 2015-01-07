@@ -90,7 +90,6 @@
     <orderEntry type="library" exported="" scope="TEST" name="dagger-1.1.0" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="guava-18.0" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="hamcrest-library-1.1" level="project" />
-    <orderEntry type="library" exported="" name="appcompat-v7-21.0.3" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="ant-1.8.0" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="testrunner-runtime-1.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="sqlite4java-0.282" level="project" />

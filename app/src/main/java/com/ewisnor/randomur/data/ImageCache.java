@@ -18,11 +18,11 @@ import com.ewisnor.randomur.imgur.model.GalleryImage;
 public class ImageCache {
     private final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
 
-    /* Thumbnail cache uses a size limit of 1/16th of available memory */
-    private final int thumbnailCacheSize = maxMemory / 16;
+    /* Thumbnail cache uses a size limit of 1/4 of available memory */
+    private final int thumbnailCacheSize = maxMemory / 4;
 
-    /* Image meta cache uses a size limit of 1/16th of available memory */
-    private final int imageMetaCacheSize = maxMemory / 16;
+    /* Image meta cache uses a size limit of 1/4 of available memory */
+    private final int imageMetaCacheSize = maxMemory / 4;
 
     private LruCache<Integer, Bitmap> thumbnailCache;
     private LruCache<Integer, GalleryImage> imageMetaCache;

@@ -1,5 +1,6 @@
 package com.ewisnor.randomur.ui;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -8,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -32,7 +32,7 @@ import com.ewisnor.randomur.ui.fragment.ThumbnailGridFragment;
  *
  * Created by evan on 2015-01-02.
  */
-public class ThumbnailActivity extends ActionBarActivity implements OnThumbnailClickListener, OnNetworkInterruptionListener, OnCacheThumbnailsFinishedListener {
+public class ThumbnailActivity extends Activity implements OnThumbnailClickListener, OnNetworkInterruptionListener, OnCacheThumbnailsFinishedListener {
     /** State ID for storing the isConnected boolean */
     private static final String STATE_IS_CONNECTED = "stateIsConnected";
 

@@ -1,15 +1,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" tools:context=".RandomImageActivity">
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".ThumbnailActivity">
 
     <item android:id="@+id/action_loading"
         android:title="Loading... "
         android:visible="false"
         android:enabled="false"
-        app:showAsAction="always" />
+        android:showAsAction="always" />
 
     <item android:id="@+id/action_refresh"
         android:title="Refresh"
-        android:icon="@android:drawable/ic_menu_rotate"
-        app:showAsAction="always" />
+        android:icon="@drawable/glyphicons_081_refresh"
+        android:showAsAction="always" />
 </menu>
