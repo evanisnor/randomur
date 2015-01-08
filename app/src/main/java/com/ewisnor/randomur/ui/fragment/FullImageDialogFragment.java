@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.ewisnor.randomur.R;
 import com.ewisnor.randomur.application.RandomurApp;
@@ -98,7 +99,8 @@ public class FullImageDialogFragment extends DialogFragment implements OnImageDo
     @Override
     public void OnImageDownloaded(Bitmap image) {
         if (image == null) {
-            RandomurLogger.error("Failed to show full size image");
+            Toast.makeText(getActivity().getApplicationContext(), R.string.image_not_found, Toast.LENGTH_SHORT).show();
+            dismiss();
         }
         else {
             this.image = image;
