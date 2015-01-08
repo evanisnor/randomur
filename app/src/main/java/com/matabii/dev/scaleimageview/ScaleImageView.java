@@ -12,10 +12,6 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 
-/**
- * Note: The repository this was borrowed from does not specify a license. Using it anyway.
- * https://github.com/matabii/scale-imageview-android
- */
 public class ScaleImageView extends ImageView implements OnTouchListener {
     private Context mContext;
     private float MAX_SCALE = 2f;
