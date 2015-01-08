@@ -34,6 +34,13 @@ public class CacheThumbnailsTask extends AsyncTask<Integer, Integer, Void> {
     private OnCacheThumbnailsFinishedListener cacheThumbnailsFinishedListener;
     private Boolean isRunning;
 
+    /**
+     * Create a new CacheThumbnailsTask
+     * @param context Context reference
+     * @param adapter Reference to the active ThumbnailAdapter instance
+     * @param networkInterruptionListener A listener for network interruptions
+     * @param cacheThumbnailsFinishedListener A listener to be called on completion
+     */
     public CacheThumbnailsTask(Context context, ThumbnailAdapter adapter,
                                OnNetworkInterruptionListener networkInterruptionListener,
                                OnCacheThumbnailsFinishedListener cacheThumbnailsFinishedListener) {
@@ -43,6 +50,9 @@ public class CacheThumbnailsTask extends AsyncTask<Integer, Integer, Void> {
         this.cacheThumbnailsFinishedListener = cacheThumbnailsFinishedListener;
     }
 
+    /**
+     * Cancel this task.
+     */
     public void cancel() {
         isRunning = false;
     }
@@ -59,52 +69,59 @@ public class CacheThumbnailsTask extends AsyncTask<Integer, Integer, Void> {
 
         RandomurLogger.info("Fetching random thumbnail page " + pageNumber);
 
-        try {
-            BasicImages randomImageMeta = ImgurApi.getRandomImageMeta(pageNumber);
-            Integer count = randomImageMeta.getData().length;
-            Integer futureTotal = appContext.getImageCache().countThumbnails() + count;
+        BasicImages randomImageMeta = getRandomImageMeta(pageNumber);
+        if (randomImageMeta == null) {
+            return null;
+        }
 
-            for (GalleryImage imageMeta : randomImageMeta.getData()) {
-                if (!isRunning) {
-                    return null;
+        Integer count = randomImageMeta.getData().length;
+        Integer futureTotal = appContext.getImageCache().countThumbnails() + count;
+
+        for (GalleryImage imageMeta : randomImageMeta.getData()) {
+            if (!isRunning) {
+                break;
+            }
+            else if (imageMeta.isAlbum() || imageMeta.isNsfw()) {
+                continue;
+            }
+
+            String url = imageMeta.getThumbnailDownloadUrl();
+            Pair<InputStream, Integer> result;
+            try {
+                result = HttpHelper.GetByteStream(url);
+            }
+            catch (IOException ioe) {
+                RandomurLogger.error("Failed to cache thumbnails: " + ioe.getMessage());
+                if (networkInterruptionListener != null) {
+                    networkInterruptionListener.onNetworkInterruption();
                 }
-                else if (imageMeta.isAlbum() || imageMeta.isNsfw()) {
+                break;
+            }
+
+            InputStream thumbnailStream = result.getFirst();
+            Integer status = result.getSecond();
+
+            if (status == HttpStatus.SC_OK || status == HttpStatus.SC_ACCEPTED) {
+                Bitmap thumbnail = BitmapFactory.decodeStream(thumbnailStream);
+                if (thumbnail == null) {
+                    RandomurLogger.error("Failed to decode thumbnail");
                     continue;
                 }
 
-                String url = imageMeta.getThumbnailDownloadUrl();
-                Pair<InputStream, Integer> result = HttpHelper.GetByteStream(url);
-                InputStream thumbnailStream = result.getFirst();
-                Integer status = result.getSecond();
-
-                if (status == HttpStatus.SC_OK || status == HttpStatus.SC_ACCEPTED) {
-                    Bitmap thumbnail = BitmapFactory.decodeStream(thumbnailStream);
-                    if (thumbnail == null) {
-                        RandomurLogger.error("Failed to fetch thumbnail. (Status: " + status + ")");
-                        continue;
-                    }
-
-                    appContext.getImageCache().saveThumbnail(thumbId, thumbnail);
-                    appContext.getImageCache().saveImageMeta(thumbId, imageMeta);
-                    thumbId++;
-                    publishProgress(thumbId - futureTotal / count);
-                }
-                else if (status == HttpStatus.SC_NOT_FOUND) {
-                    RandomurLogger.info("Image " + imageMeta.getId() + " has been deleted from Imgur. Skipping.");
-                }
-                else {
-                    RandomurLogger.error("Imgur did not respond favorably to the request. (Status: " + status + ")");
-                }
+                appContext.getImageCache().saveThumbnail(thumbId, thumbnail);
+                appContext.getImageCache().saveImageMeta(thumbId, imageMeta);
+                thumbId++;
+                publishProgress(thumbId - futureTotal / count);
             }
-
-            appContext.getImageCache().setCurrentPage(pageNumber);
-        }
-        catch (IOException ioe) {
-            RandomurLogger.error("Failed to cache thumbnails: " + ioe.getMessage());
-            if (networkInterruptionListener != null) {
-                networkInterruptionListener.onNetworkInterruption();
+            else if (status == HttpStatus.SC_NOT_FOUND) {
+                RandomurLogger.info("Image " + imageMeta.getId() + " has been deleted from Imgur. Skipping.");
+            }
+            else {
+                RandomurLogger.error("Imgur did not respond favorably to the request. (Status: " + status + ")");
             }
         }
+
+        appContext.getImageCache().setCurrentPage(pageNumber);
 
         return null;
     }
@@ -120,6 +137,24 @@ public class CacheThumbnailsTask extends AsyncTask<Integer, Integer, Void> {
         super.onPostExecute(aVoid);
         if (cacheThumbnailsFinishedListener != null) {
             cacheThumbnailsFinishedListener.onCacheThumbnailsFinished();
+        }
+    }
+
+    /**
+     * Get the random image meta for the specified page number.
+     * @param pageNumber Imgur random endpoint page
+     * @return Random image meta
+     */
+    private BasicImages getRandomImageMeta(Integer pageNumber) {
+        try {
+            return ImgurApi.getRandomImageMeta(pageNumber);
+        }
+        catch (IOException ioe) {
+            RandomurLogger.error("Failed to cache thumbnails: " + ioe.getMessage());
+            if (networkInterruptionListener != null) {
+                networkInterruptionListener.onNetworkInterruption();
+            }
+            return null;
         }
     }
 }
