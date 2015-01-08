@@ -13,6 +13,7 @@ import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 
 /**
+ * Note: The repository this was borrowed from does not specify a license. Using it anyway.
  * https://github.com/matabii/scale-imageview-android
  */
 public class ScaleImageView extends ImageView implements OnTouchListener {
@@ -112,7 +113,8 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
 
         setImageMatrix(mMatrix);
         mMinScale = mScale;
-        zoomTo(mScale, mWidth / 2, mHeight / 2);
+        // Fixing odd scale bug: https://github.com/matabii/scale-imageview-android/issues/3
+//        zoomTo(mScale, mWidth / 2, mHeight / 2);
         cutting();
         return super.setFrame(l, t, r, b);
     }
