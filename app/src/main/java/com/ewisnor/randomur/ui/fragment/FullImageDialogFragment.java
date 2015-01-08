@@ -99,7 +99,10 @@ public class FullImageDialogFragment extends DialogFragment implements OnImageDo
     @Override
     public void OnImageDownloaded(Bitmap image) {
         if (image == null) {
-            Toast.makeText(getActivity().getApplicationContext(), R.string.image_not_found, Toast.LENGTH_SHORT).show();
+            Context context = getActivity();
+            if (context != null) {
+                Toast.makeText(context, R.string.image_not_found, Toast.LENGTH_SHORT).show();
+            }
             dismiss();
         }
         else {

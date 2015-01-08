@@ -61,9 +61,6 @@ public class FetchFullImageTask extends AsyncTask<Integer, Void, Bitmap> {
         }
         catch (IOException ioe) {
             RandomurLogger.error("Failed to fetch full size image " + meta.getId());
-            if (networkInterruptionListener != null) {
-                networkInterruptionListener.onNetworkInterruption();
-            }
             return null;
         }
 
