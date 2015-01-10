@@ -6,7 +6,7 @@ A random image viewer for Android. Powered by [Imgur](https://imgur.com/).
 
 ## Install
 
-Download the latest [debug APK](https://github.com/leadhead9/randomur/blob/master/dist/randomur.debug.apk) or clone and run with Android Studio.
+Download the latest [debug APK](https://github.com/leadhead9/randomur/raw/master/dist/randomur.debug.apk) or clone and run with Android Studio.
 
 
 ##Credits
