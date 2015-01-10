@@ -14,6 +14,7 @@ import com.ewisnor.randomur.imgur.model.GalleryImage;
 import com.ewisnor.randomur.util.HttpHelper;
 import com.ewisnor.randomur.util.ImageHelper;
 import com.ewisnor.randomur.util.Pair;
+import com.ewisnor.randomur.util.StreamHelper;
 
 import org.apache.http.HttpStatus;
 
@@ -93,31 +94,34 @@ public class FetchFullImageTask extends AsyncTask<Integer, Void, Bitmap> {
      * @return A bitmap image, possibly scaled down
      */
     private Bitmap decodeImage(InputStream is) {
-        InputStream stream = new BufferedInputStream(is);
-        Pair<Integer, Integer> bounds = ImageHelper.getImageBounds(stream);
+        byte[] imageBytes;
 
         try {
-            stream.reset();
+            imageBytes = StreamHelper.readInputStream(is);
         }
         catch (IOException ioe) {
-            RandomurLogger.error("Failed to reset image stream position. " + ioe.getMessage());
+            RandomurLogger.error("Failed to read bitmap from stream. " + ioe.getMessage());
+            return null;
         }
+
+        Pair<Integer, Integer> bounds = ImageHelper.getImageBounds(imageBytes);
 
         Bitmap image;
         if (bounds.getFirst() > ImageHelper.MAX_IMAGE_BOUNDS || bounds.getSecond() > ImageHelper.MAX_IMAGE_BOUNDS) {
             RandomurLogger.debug("Image is too large. Scaling it down.");
-            image = ImageHelper.getScaledDownImage(stream);
+            image = ImageHelper.getScaledDownImage(imageBytes);
         }
         else {
-            image = BitmapFactory.decodeStream(stream);
+//            image = BitmapFactory.decodeStream(stream);
+            image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
         }
-
-        try {
-            stream.close();
-        }
-        catch (IOException ioe) {
-            RandomurLogger.error("Failed to clean up image stream. " + ioe.getMessage());
-        }
+//
+//        try {
+//            stream.close();
+//        }
+//        catch (IOException ioe) {
+//            RandomurLogger.error("Failed to clean up image stream. " + ioe.getMessage());
+//        }
 
         return image;
     }

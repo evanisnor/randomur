@@ -38,6 +38,27 @@ public class StreamHelper {
     }
 
     /**
+     * Read the bytes from an InputStream.
+     * @param is InputStream to read
+     * @return A byte array of the stream's contents
+     * @throws IOException
+     */
+    public static byte[] readInputStream(InputStream is) throws IOException {
+        final Integer bufferSize = 1024;
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[bufferSize];
+
+        int length;
+        while ((length = is.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, length);
+        }
+
+        byte[] bytes = outputStream.toByteArray();
+        outputStream.close();
+        return bytes;
+    }
+
+    /**
      * Convert an InputStream to a String.
      * @param is InputStream
      * @return String
