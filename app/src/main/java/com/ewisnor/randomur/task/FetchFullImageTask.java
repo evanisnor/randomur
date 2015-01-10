@@ -112,16 +112,8 @@ public class FetchFullImageTask extends AsyncTask<Integer, Void, Bitmap> {
             image = ImageHelper.getScaledDownImage(imageBytes);
         }
         else {
-//            image = BitmapFactory.decodeStream(stream);
             image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
         }
-//
-//        try {
-//            stream.close();
-//        }
-//        catch (IOException ioe) {
-//            RandomurLogger.error("Failed to clean up image stream. " + ioe.getMessage());
-//        }
 
         return image;
     }
