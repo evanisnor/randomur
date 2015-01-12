@@ -23,6 +23,7 @@ public class RandomurApp extends Application {
     @Override
     public void onLowMemory() {
         super.onLowMemory();
+        RandomurLogger.info("OS has reported low memory. Cleaning up image cache.");
         this.imageCache.cleanUp();
     }
 

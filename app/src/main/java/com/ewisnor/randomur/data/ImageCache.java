@@ -17,6 +17,7 @@ import com.ewisnor.randomur.imgur.model.GalleryImage;
  */
 public class ImageCache {
     private final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+    private final int MAX_WRITE_ATTEMPTS = 3;
 
     /* Thumbnail cache uses a size limit of 1/4 of available memory */
     private final int thumbnailCacheSize = maxMemory / 4;
@@ -39,12 +40,32 @@ public class ImageCache {
     /**
      * Cache the provided thumbnail in memory
      * @param id The universal ID of the image
-     * @param image
+     * @param image Bitmap image thumbnail to save
      */
     public void saveThumbnail(Integer id, Bitmap image) {
-        if (this.thumbnailCache.get(id) == null && image != null) {
-            this.thumbnailCache.put(id, image);
-            RandomurLogger.debug("Cached thumbnail " + id);
+        saveThumbnail(id, image, 1);
+    }
+
+    /**
+     * Private overload for handling thumbnail saves when the LruCache memory space has been exceeded.
+     * Attempts to clear and re-save up to MAX_WRITE_ATTEMPTS.
+     * @param id The universal ID of the image
+     * @param image Bitmap image thumbnail to save
+     * @param attempt Attempt number, starting at 1.
+     */
+    private void saveThumbnail(Integer id, Bitmap image, Integer attempt) {
+        if (this.thumbnailCache.get(id) == null && image != null && attempt <= MAX_WRITE_ATTEMPTS) {
+            try {
+                this.thumbnailCache.put(id, image);
+            }
+            catch (OutOfMemoryError oome) {
+                RandomurLogger.debug("Insufficient free memory for saving a thumbnail. Cleaning up resources and trying again. Attempt #" + attempt);
+                this.cleanUp();
+                this.saveThumbnail(id, image, attempt++);
+            }
+        }
+        else if (attempt > MAX_WRITE_ATTEMPTS) {
+            RandomurLogger.error("Failed to free enough memory to save thumbnail " + id);
         }
     }
 
@@ -71,8 +92,29 @@ public class ImageCache {
      * @param meta Metadata to store
      */
     public void saveImageMeta(Integer id, GalleryImage meta) {
-        if (this.imageMetaCache.get(id) == null && meta != null) {
-            this.imageMetaCache.put(id, meta);
+        this.saveImageMeta(id, meta, 1);
+    }
+
+    /**
+     * Private overload for handling image meta saves when the LruCache memory space has been exceeded.
+     * Attempts to clear and re-save up to MAX_WRITE_ATTEMPTS.
+     * @param id The universal ID of the image
+     * @param meta Metadata to store
+     * @param attempt Attempt number, starting at 1.
+     */
+    private void saveImageMeta(Integer id, GalleryImage meta, Integer attempt) {
+        if (this.imageMetaCache.get(id) == null && meta != null && attempt <= MAX_WRITE_ATTEMPTS) {
+            try {
+                this.imageMetaCache.put(id, meta);
+            }
+            catch (OutOfMemoryError oome) {
+                RandomurLogger.debug("Insufficient free memory for saving image meta. Cleaning up resources and trying again.");
+                this.cleanUp();
+                this.saveImageMeta(id, meta, attempt++);
+            }
+        }
+        else if (attempt > MAX_WRITE_ATTEMPTS) {
+            RandomurLogger.error("Failed to free enough memory to save image meta for ID " + id);
         }
     }
 
@@ -124,5 +166,6 @@ public class ImageCache {
         this.thumbnailCache.evictAll();
         this.imageMetaCache.evictAll();
         this.currentPage = 0;
+        this.firstVisiblePosition = 0;
     }
 }
